@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager
 import os
-#from flask_cors import CORS
+from flask_cors import CORS
 
 
 from routes.student_routes import user_app
@@ -25,7 +25,7 @@ app.config['ALLOWED_EXTENSIONS'] = {'jpg', 'jpeg', 'png'}  # Adicione 'png' à l
 jwt = JWTManager(app)
 
 
-#cors = CORS(app, resources={r"/*": {"origins": "*"}})
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 @app.route('/')
 def home():
