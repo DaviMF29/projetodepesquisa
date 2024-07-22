@@ -79,3 +79,13 @@ def delete_student_controller(current_user_id, user_id):
 
     finally:
         connection.close()
+
+def get_student_by_id_controller(user_id):
+    connection = db_connection()
+    if connection:
+        verify_id_exists(connection,user_id,'student')
+        user = Student.get_student_by_id_service(connection, user_id)
+        connection.close()
+        return user
+    else:
+        return {"message": "Falha ao conectar com o banco de dados!"}, 500

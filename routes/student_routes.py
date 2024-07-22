@@ -89,3 +89,8 @@ def rename_table():
         return jsonify({"message": "All fields are required"}), 400
     response = Student.rename_table(current_name, new_name)
     return jsonify(response)
+
+@user_app.route('/api/student/<user_id>', methods=['GET'])
+def get_user_route(user_id):
+    response = get_student_controller(user_id)
+    return jsonify(response)
