@@ -14,7 +14,9 @@ def add_student_controller(data):
     birth = data.get('birthStudent')
     password = data.get('passwordStudent')
 
-    
+    brithConverted = birth.split('/')
+    birth = f"{brithConverted[2]}-{brithConverted[1]}-{brithConverted[0]}"
+
     verifyEmail = verify_email_registered(connection,email)
     if verifyEmail:
         return {"message": "Email já cadastrado!"}, 400
