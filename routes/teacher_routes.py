@@ -34,7 +34,7 @@ def add_user_router():
         return jsonify({"message": "Invalid email"}), 400
 
     domain = email.split("@")[-1]
-    allowed_domains = ["gmail.com", "yahoo.com", "outlook.com", "hotmail.com", "live.com", "aluno.uepb.edu.br"]
+    allowed_domains = ["servidor.uepb.edu.br"]
     if domain not in allowed_domains:
         return jsonify({"message": "Only specific email domains are allowed"}), 401
 
