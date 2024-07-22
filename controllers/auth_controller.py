@@ -1,5 +1,4 @@
 import bcrypt
-from bson import ObjectId
 from flask import jsonify
 from flask_jwt_extended import create_access_token, get_jwt_identity
 from models.Teacher import Teacher
@@ -52,7 +51,7 @@ def login_controller(data):
 
 def get_user_data():
     user_id = get_jwt_identity()
-    user_data = Student.get_user_by_id_model(ObjectId(user_id))
+    user_data = Student.get_user_by_id_model(user_id)
     if user_data:
         user_data.pop('password', None)
         user_data['_id'] = str(user_data['_id'])
