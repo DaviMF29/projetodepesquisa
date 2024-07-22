@@ -1,18 +1,18 @@
 from aifc import Error
 
 class User:
-    def __init__(self, name, email, password, last_name=None, birth=None, gender=None, institution=None, certificate=None, state=None, city=None):
+    def __init__(self, name, email, password, birth, gender=None, institution=None, certificate=None, state=None, city=None, matricula=None):
         self.id = None
         self.name = name
         self.email = email
         self.password = password
-        self.last_name = last_name
         self.birth = birth
         self.gender = gender
         self.institution = institution
         self.certificate = certificate
         self.state = state
         self.city = city
+        self.matricula = matricula
 
 
     def create_user_service(self, connection, user_type, user_data):
@@ -20,10 +20,10 @@ class User:
             cursor = connection.cursor()
             if user_type == 'aluno':
                 cursor.execute("""
-                    INSERT INTO aluno (nameStudent, emailStudent, passwordStudent) 
-                    VALUES (%s, %s, %s)
+                    INSERT INTO aluno (nameStudent, emailStudent, birthStudent, passwordStudent) 
+                    VALUES (%s, %s, %s, %s)
                 """, (
-                    user_data['nameStudent'], user_data['emailStudent'], user_data['passwordStudent']
+                    user_data['nameStudent'], user_data['emailStudent'], user_data['birthStudent'], user_data['passwordStudent']
                 ))
                 connection.commit()
                 inserted_id = cursor.lastrowid 
@@ -31,10 +31,10 @@ class User:
 
             elif user_type == 'professor':
                 cursor.execute("""
-                    INSERT INTO professor (nameTeacher, emailTeacher, passwordTeacher)
-                    VALUES (%s, %s, %s)
+                    INSERT INTO professor (nameTeacher, emailTeacher, birthTeacher, passwordTeacher)
+                    VALUES (%s, %s, %s, %s)
                 """, (
-                    user_data['nameTeacher'], user_data['emailTeacher'], user_data['passwordTeacher']
+                    user_data['nameTeacher'], user_data['emailTeacher'], user_data['birthTeacher'], user_data['passwordTeacher']
                 ))
                 connection.commit()
                 inserted_id = cursor.lastrowid 
@@ -161,50 +161,3 @@ class User:
             print(f"Erro ao tentar renomear a tabela: {e}")
             return False
 
-
-
-'''
-    @staticmethod
-    def get_user_by_email_model(email):
-        users_collection = db.users
-        user = users_collection.find_one({"email": email})
-        return user
-    
-    @staticmethod
-    def get_user_by_id_model(id):
-        users_collection = db.users
-        user = users_collection.find_one({"_id": ObjectId(id)})
-        if user:
-            user["_id"] = str(user["_id"])
-            return user
-        return None
-    
-    @staticmethod
-    def update_user(user_id, updated_fields):
-        users_collection = db.users
-        result = users_collection.update_one({"_id": ObjectId(user_id)}, {"$set": updated_fields})
-        return result
-        
-    @staticmethod
-    def delete_account_model(user_id):
-        users_collection = db.users
-        result = users_collection.find_one_and_delete({"_id": ObjectId(user_id)})
-        return result
-    
-    def add_new_field_to_all_users(new_field_name):
-        users_collection = db.users
-        result = users_collection.update_many({}, {"$set": {new_field_name: []}})
-        return result
-
-    
-    def update_user_image_model(user_id, image_url):
-        users_collection = db.users
-        result = users_collection.update_one(
-            {'_id': ObjectId(user_id)},
-            {'$set': {'image': image_url}}
-        )
-
-        if result.modified_count == 0:
-            raise Exception(f"Failed to update user's image with id {user_id}.")
-
-        return {"message": "Image added successfully"}'''

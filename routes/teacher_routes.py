@@ -13,10 +13,16 @@ def add_user_router():
 
     name = data.get('nameTeacher').lower()
     email = data.get('emailTeacher').lower()
+    birth = data.get('birthTeacher')
     password = data.get('passwordTeacher')
+    confirm_password = data.get('confirm_password_Teacher')
+    
 
-    if not all([name, email, password]):
+    if not all([name, email, birth, password, confirm_password]):
         return jsonify({"message": "All fields are required"}), 400
+    
+    if password != confirm_password:
+        return jsonify({"message": "Passwords do not match!"}), 400
 
     if len(password) < 6:
         return jsonify({"message": "Password must have at least 6 characters"}), 400

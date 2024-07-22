@@ -6,23 +6,6 @@ from models.Student import Student
 from models.Users import User
 
 
-def verify_user(userId):
-    connection = db_connection()
-    if not connection:
-        abort(500, {"message": "Database connection error"})
-    
-    try:
-        user = Student.get_student_by_id_service(connection, userId)
-        if not user:
-            user = Teacher.get_teacher_by_id_service(connection, userId)
-        if not user:
-            abort(400, {"message": "User not exist"})
-        return user
-    except Exception as e:
-        abort(500, {"message": str(e)})
-    finally:
-        connection.close()
-
 @staticmethod
 def verify_email_registered(connection, email):
     user = Student.get_student_by_email_service(connection, email)
@@ -30,7 +13,15 @@ def verify_email_registered(connection, email):
         user = Teacher.get_teacher_by_email_service(connection, email)
     return user is not None
 
-
+@staticmethod
+def verify_id_exists(connection, user_id, user_type):
+    if user_type == 'student':
+        user = Student.get_student_by_id_service(connection, user_id)
+    elif user_type == 'teacher':
+        user = Teacher.get_teacher_by_id_service(connection, user_id)
+    if not user:
+        abort(404, {"message": "User not found"})
+    return user
 
 #def verify_username_registered(username):
     #user = Student.get_user_by_username_service(username)
