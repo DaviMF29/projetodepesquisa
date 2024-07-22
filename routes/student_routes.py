@@ -11,12 +11,11 @@ user_app = Blueprint('user_app', __name__)
 def add_user_router():
     data = request.get_json()
 
-    name = data.get('nameStudent').lower()
-    email = data.get('emailStudent').lower()
+    name = data.get('nameStudent')
+    email = data.get('emailStudent')
     birth = data.get('birthStudent')
     password = data.get('passwordStudent')
     confirm_password = data.get('confirm_password_Student')
-    
 
     if not all([name, email, birth, password, confirm_password]):
         return jsonify({"message": "All fields are required"}), 400
@@ -28,7 +27,7 @@ def add_user_router():
         return jsonify({"message": "Password must have at least 6 characters"}), 400
     
     if len(password) > 20:
-        return jsonify({"message": "Password must not exceed 20 characters"})
+        return jsonify({"message": "Password must not exceed 20 characters"}), 400
     
     if "@" not in email:
         return jsonify({"message": "Invalid email"}), 400
@@ -38,12 +37,18 @@ def add_user_router():
     if domain not in allowed_domains:
         return jsonify({"message": "Only specific email domains are allowed"}), 401
 
-    hashed_password = hashpw(password.encode('utf-8'), gensalt())
+    hashed_password = hashpw(password.encode('utf-8'), gensalt()).decode('utf-8')
 
-    data['passwordStudent'] = hashed_password.decode('utf-8')  
+    data = {
+        'nameStudent': name.lower(),
+        'emailStudent': email.lower(),
+        'birthStudent': birth,
+        'passwordStudent': hashed_password
+    }
 
     response, status_code = add_student_controller(data)
     return jsonify(response), status_code
+
 
 @user_app.route("/api/student/<user_id>", methods=['PATCH'])
 @jwt_required()
