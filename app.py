@@ -27,6 +27,10 @@ jwt = JWTManager(app)
 
 #cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
+@app.route('/')
+def home():
+    return "API de cadastro do screen programming"
+
 
 if __name__ == "__main__":
     print("Servidor rodando")
