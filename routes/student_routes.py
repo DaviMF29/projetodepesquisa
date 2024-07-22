@@ -89,4 +89,3 @@ def rename_table():
         return jsonify({"message": "All fields are required"}), 400
     response = Student.rename_table(current_name, new_name)
     return jsonify(response)
-
