@@ -12,6 +12,9 @@ def add_teacher_controller(data):
     email = data.get('emailTeacher').lower()
     birth = data.get('birthTeacher')
     password = data.get('passwordTeacher')
+
+    birthConverted = birth.split('/')
+    birth = f"{birthConverted[2]}-{birthConverted[1]}-{birthConverted[0]}"
     
 
     verifyEmail = verify_email_registered(connection,email)
