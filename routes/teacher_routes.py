@@ -18,7 +18,7 @@ def add_user_router():
     confirm_password = data.get('confirm_password_Teacher')
     
 
-    if not all([name, email, password, confirm_password]):
+    if not all([name, email, birth, password, confirm_password]):
         return jsonify({"message": "All fields are required"}), 400
     
     if password != confirm_password:
