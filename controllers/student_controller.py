@@ -7,38 +7,50 @@ from middleware.global_middleware import (
     verify_id_exists,
 )
 
+
 def add_student_controller(data):
     try:
         connection = db_connection()
+
+        if connection is None:
+            raise ConnectionError("Falha ao conectar com o banco de dados.")
 
         name = data.get('nameStudent').lower()
         email = data.get('emailStudent').lower()
         birth = data.get('birthStudent')
         password = data.get('passwordStudent')
 
-        birthConverted = birth.split('/')
-        birth = f"{birthConverted[2]}-{birthConverted[1]}-{birthConverted[0]}"
+        try:
+            birth_converted = birth.split('-') if '-' in birth else birth.split('/')
+            birth = f"{birth_converted[2]}-{birth_converted[1]}-{birth_converted[0]}"
+        except (IndexError, ValueError) as date_error:
+            raise ValueError("Formato de data inválido.") from date_error
 
         if verify_email_registered(connection, email):
             return {"message": "Email já cadastrado!"}, 400
 
-        if connection:
-            student = Student(
-                name=name,
-                email=email,
-                birth=birth,
-                password=password
-            )
+        student = Student(
+            name=name,
+            email=email,
+            birth=birth,
+            password=password
+        )
 
-            inserted_id = student.create_student_service(connection)
-            connection.close()
+        inserted_id = student.create_student_service(connection)
+        connection.close()
 
-            if inserted_id is not None:
-                return jsonify({"message": "Usuário criado com sucesso!"}), 201
-            else:
-                return jsonify({"message": "Erro ao criar usuário"}), 500
+        if inserted_id is not None:
+            return {"message": "Usuário criado com sucesso!"}, 201
         else:
-            return jsonify({"message": "Falha ao conectar com o banco de dados!"}), 500
+            return {"message": "Erro ao criar usuário"}, 500
+
+    except ConnectionError as conn_err:
+        print(f"Erro de conexão com o banco de dados: {conn_err}")
+        return {"message": "Erro de conexão com o banco de dados"}, 500
+
+    except ValueError as val_err:
+        print(f"Erro de validação: {val_err}")
+        return {"message": str(val_err)}, 400
 
     except Exception as e:
         print(f"Erro no controlador de aluno: {e}")
