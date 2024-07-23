@@ -41,25 +41,19 @@ def add_user_router():
 
         hashed_password = hashpw(password.encode('utf-8'), gensalt()).decode('utf-8')
 
-        data = {
+        student_data = {
             'nameStudent': name.lower(),
             'emailStudent': email.lower(),
             'birthStudent': birth,
             'passwordStudent': hashed_password
         }
 
-        response, status_code = add_student_controller(data)
-        return jsonify(response), status_code
+        response_data, status_code = add_student_controller(student_data)
+        return jsonify(response_data), status_code
 
     except Exception as e:
-        error_message = str(e)
-        stack_trace = traceback.format_exc()  # Captura o traceback completo
-        print(f"Erro no controlador de aluno: {stack_trace}")  # Loga no servidor para debug
-        return jsonify({
-            "message": "Internal Server Error",
-            "error": error_message,
-            "trace": stack_trace  # Inclui o traceback na resposta JSON para o cliente
-        }), 500
+        print(f"Erro no controlador de aluno: {e}")
+        return jsonify({"message": "Internal Server Error"}), 500
 
 
 
