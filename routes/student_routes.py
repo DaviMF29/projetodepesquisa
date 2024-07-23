@@ -50,6 +50,7 @@ def add_user_router():
     response, status_code = add_student_controller(data)
     return jsonify(response), status_code
 
+
 @user_app.route("/api/student/<user_id>", methods=['PATCH'])
 @jwt_required()
 def update_user(user_id):
