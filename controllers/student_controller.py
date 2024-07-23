@@ -36,13 +36,8 @@ def add_student_controller(data):
             password=password
         )
 
-        inserted_id = student.create_student_service(connection)
         connection.close()
 
-        if inserted_id is not None:
-            return {"message": "Usuário criado com sucesso!"}, 201
-        else:
-            return {"message": "Erro ao criar usuário"}, 500
 
     except ConnectionError as conn_err:
         print(f"Erro de conexão com o banco de dados: {conn_err}")
