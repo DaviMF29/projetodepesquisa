@@ -11,6 +11,9 @@ def add_student_controller(data):
     try:
         connection = db_connection()
 
+        if not isinstance(data, dict):
+            raise ValueError("Os dados recebidos não estão no formato JSON.")
+
         name = data.get('nameStudent').lower()
         email = data.get('emailStudent').lower()
         birth = data.get('birthStudent')
