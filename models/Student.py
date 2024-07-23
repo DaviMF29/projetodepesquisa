@@ -23,8 +23,13 @@ class Student(User):
 
         
     def create_student_service(self, connection):
-        student_data = self.to_db_format()
-        return self.create_user_service(connection, 'aluno', student_data)
+        try:
+            student_data = self.to_db_format()
+            return self.create_user_service(connection, 'aluno', student_data)
+        except Exception as e:
+            print(f"Erro ao criar serviço de estudante: {e}")
+            return None
+
     
     def update_student_service(connection, user_id, field, value):
         User.update_user_service(connection, 'aluno', user_id, field, value)

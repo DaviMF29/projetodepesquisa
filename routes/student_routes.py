@@ -9,45 +9,51 @@ user_app = Blueprint('user_app', __name__)
 
 @user_app.route('/api/student', methods=['POST'])
 def add_user_router():
-    data = request.get_json()
+    try:
+        data = request.get_json()
 
-    name = data.get('nameStudent')
-    email = data.get('emailStudent')
-    birth = data.get('birthStudent')
-    password = data.get('passwordStudent')
-    confirm_password = data.get('confirm_password_Student')
+        name = data.get('nameStudent')
+        email = data.get('emailStudent')
+        birth = data.get('birthStudent')
+        password = data.get('passwordStudent')
+        confirm_password = data.get('confirm_password_Student')
 
-    if not all([name, email, birth, password, confirm_password]):
-        return jsonify({"message": "All fields are required"}), 400
+        if not all([name, email, birth, password, confirm_password]):
+            return jsonify({"message": "All fields are required"}), 400
 
-    if password != confirm_password:
-        return jsonify({"message": "Passwords do not match!"}), 400
+        if password != confirm_password:
+            return jsonify({"message": "Passwords do not match!"}), 400
 
-    if len(password) < 6:
-        return jsonify({"message": "Password must have at least 6 characters"}), 400
-    
-    if len(password) > 20:
-        return jsonify({"message": "Password must not exceed 20 characters"}), 400
-    
-    if "@" not in email:
-        return jsonify({"message": "Invalid email"}), 400
+        if len(password) < 6:
+            return jsonify({"message": "Password must have at least 6 characters"}), 400
 
-    domain = email.split("@")[-1]
-    allowed_domains = ["aluno.uepb.edu.br"]
-    if domain not in allowed_domains:
-        return jsonify({"message": "Only specific email domains are allowed"}), 401
+        if len(password) > 20:
+            return jsonify({"message": "Password must not exceed 20 characters"}), 400
 
-    hashed_password = hashpw(password.encode('utf-8'), gensalt()).decode('utf-8')
+        if "@" not in email:
+            return jsonify({"message": "Invalid email"}), 400
 
-    data = {
-        'nameStudent': name.lower(),
-        'emailStudent': email.lower(),
-        'birthStudent': birth,
-        'passwordStudent': hashed_password
-    }
+        domain = email.split("@")[-1]
+        allowed_domains = ["aluno.uepb.edu.br"]
+        if domain not in allowed_domains:
+            return jsonify({"message": "Only specific email domains are allowed"}), 401
 
-    response, status_code = add_student_controller(data)
-    return jsonify(response), status_code
+        hashed_password = hashpw(password.encode('utf-8'), gensalt()).decode('utf-8')
+
+        data = {
+            'nameStudent': name.lower(),
+            'emailStudent': email.lower(),
+            'birthStudent': birth,
+            'passwordStudent': hashed_password
+        }
+
+        response, status_code = add_student_controller(data)
+        return jsonify(response), status_code
+
+    except Exception as e:
+        print(f"Erro na rota '/api/student': {e}")
+        return jsonify({"message": "Internal Server Error"}), 500
+
 
 
 @user_app.route("/api/student/<user_id>", methods=['PATCH'])
