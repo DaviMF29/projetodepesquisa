@@ -1,3 +1,4 @@
+from flask import jsonify
 from models.Student import Student
 from db.bd_mysql import db_connection
 
@@ -33,11 +34,11 @@ def add_student_controller(data):
             connection.close()
 
             if inserted_id is not None:
-                return {"message": "Usuário criado com sucesso!", "user_id": inserted_id}, 200
+                return jsonify({"message": "Usuário criado com sucesso!"}), 201
             else:
-                return {"message": "Falha ao criar usuário"}, 500
+                return jsonify({"message": "Erro ao criar usuário"}), 500
         else:
-            return {"message": "Falha ao conectar com o banco de dados!"}, 500
+            return jsonify({"message": "Falha ao conectar com o banco de dados!"}), 500
 
     except Exception as e:
         print(f"Erro no controlador de aluno: {e}")
