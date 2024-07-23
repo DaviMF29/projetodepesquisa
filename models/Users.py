@@ -92,9 +92,9 @@ class User:
         cursor = connection.cursor()
         try:
             if table_name == 'aluno':
-                cursor.execute(f"SELECT nameStudent AS name, emailStudent AS email FROM {table_name}")
+                cursor.execute(f"SELECT  id, nameStudent AS name, emailStudent AS email FROM {table_name}")
             elif table_name == 'professor':
-                cursor.execute(f"SELECT nameTeacher AS name, emailTeacher AS email FROM {table_name}")
+                cursor.execute(f"SELECT id, nameTeacher AS name, emailTeacher AS email FROM {table_name}")
             else:
                 raise ValueError("Invalid table name")
 
