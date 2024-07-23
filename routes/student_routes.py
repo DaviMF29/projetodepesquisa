@@ -1,3 +1,4 @@
+import traceback
 from bcrypt import gensalt, hashpw
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -51,8 +52,14 @@ def add_user_router():
         return jsonify(response), status_code
 
     except Exception as e:
-        print(f"Erro na rota '/api/student': {e}")
-        return jsonify({"message": "Internal Server Error"}), 500
+        error_message = str(e)
+        stack_trace = traceback.format_exc()  # Captura o traceback completo
+        print(f"Erro no controlador de aluno: {stack_trace}")  # Loga no servidor para debug
+        return jsonify({
+            "message": "Internal Server Error",
+            "error": error_message,
+            "trace": stack_trace  # Inclui o traceback na resposta JSON para o cliente
+        }), 500
 
 
 
