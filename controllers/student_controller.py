@@ -7,38 +7,42 @@ from middleware.global_middleware import (
 )
 
 def add_student_controller(data):
-    connection = db_connection()
-    
-    name = data.get('nameStudent').lower()
-    email = data.get('emailStudent').lower()
-    birth = data.get('birthStudent')
-    password = data.get('passwordStudent')
+    try:
+        connection = db_connection()
 
-    brithConverted = birth.split('/')
-    birth = f"{brithConverted[2]}-{brithConverted[1]}-{brithConverted[0]}"
+        name = data.get('nameStudent').lower()
+        email = data.get('emailStudent').lower()
+        birth = data.get('birthStudent')
+        password = data.get('passwordStudent')
 
-    verifyEmail = verify_email_registered(connection,email)
-    if verifyEmail:
-        return {"message": "Email já cadastrado!"}, 400
+        birthConverted = birth.split('/')
+        birth = f"{birthConverted[2]}-{birthConverted[1]}-{birthConverted[0]}"
 
-    if connection:
-        student = Student(
-            name=name,
-            email=email,
-            birth=birth,
-            password=password
-        
-        )
+        if verify_email_registered(connection, email):
+            return {"message": "Email já cadastrado!"}, 400
 
-        inserted_id = student.create_student_service(connection)
-        connection.close()
-        
-        if inserted_id is not None:
-            return {"message": 'Usuário criado com sucesso!', "user_id": inserted_id}, 200
+        if connection:
+            student = Student(
+                name=name,
+                email=email,
+                birth=birth,
+                password=password
+            )
+
+            inserted_id = student.create_student_service(connection)
+            connection.close()
+
+            if inserted_id is not None:
+                return {"message": "Usuário criado com sucesso!", "user_id": inserted_id}, 200
+            else:
+                return {"message": "Falha ao criar usuário"}, 500
         else:
-            return {"message": "Falha ao criar usuário"}, 500
-    else:
-        return {"message": "Falha ao conectar com o banco de dados!"}, 500
+            return {"message": "Falha ao conectar com o banco de dados!"}, 500
+
+    except Exception as e:
+        print(f"Erro no controlador de aluno: {e}")
+        return {"message": "Internal Server Error"}, 500
+
 
 
 

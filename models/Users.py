@@ -16,14 +16,17 @@ class User:
 
 
     def create_user_service(self, connection, user_type, user_data):
+        cursor = connection.cursor()
         try:
-            cursor = connection.cursor()
             if user_type == 'aluno':
                 cursor.execute("""
                     INSERT INTO aluno (nameStudent, emailStudent, birthStudent, passwordStudent) 
                     VALUES (%s, %s, %s, %s)
                 """, (
-                    user_data['nameStudent'], user_data['emailStudent'], user_data['birthStudent'], user_data['passwordStudent']
+                    user_data['nameStudent'], 
+                    user_data['emailStudent'], 
+                    user_data['birthStudent'], 
+                    user_data['passwordStudent']
                 ))
                 connection.commit()
                 inserted_id = cursor.lastrowid 
@@ -34,7 +37,10 @@ class User:
                     INSERT INTO professor (nameTeacher, emailTeacher, birthTeacher, passwordTeacher)
                     VALUES (%s, %s, %s, %s)
                 """, (
-                    user_data['nameTeacher'], user_data['emailTeacher'], user_data['birthTeacher'], user_data['passwordTeacher']
+                    user_data['nameTeacher'], 
+                    user_data['emailTeacher'], 
+                    user_data['birthTeacher'], 
+                    user_data['passwordTeacher']
                 ))
                 connection.commit()
                 inserted_id = cursor.lastrowid 
@@ -47,6 +53,7 @@ class User:
 
         finally:
             cursor.close()
+
     
 
     def update_user_service(connection, table_name, user_id, field, value):
