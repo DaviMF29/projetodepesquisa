@@ -12,9 +12,7 @@ group_app = Blueprint("group_app", __name__)
 def create_group_route():
     data = request.get_json()
     
-    id_teacher = get_jwt_identity()
-    
-    response, status_code = create_group_controller(id_teacher,data)
+    response, status_code = create_group_controller(data)
     return jsonify(response), status_code
 
 @group_app.route("/api/group/<groupId>/<studentId>", methods=["DELETE"])
