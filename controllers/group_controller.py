@@ -9,9 +9,9 @@ from db.bd_mysql import db_connection
 # verify_email_registered, verify_user
 # )
 
-def create_group_controller(data):
+def create_group_controller(teacherId,data):
 
-    id_teacher = data.get('id_teacher')
+    id_teacher = teacherId
     id_student = data.get("id_student")
     name = data.get("name").lower()
     period = data.get("period")
