@@ -8,6 +8,7 @@ from routes.teacher_routes import teacher_app
 from routes.group_routes import group_app
 from routes.auth_routes import auth_app
 from routes.email_routes import email_app
+from routes.token_routes import token_app
 
 app = Flask(__name__)
 
@@ -20,6 +21,7 @@ app.register_blueprint(teacher_app)
 app.register_blueprint(group_app)
 app.register_blueprint(auth_app)
 app.register_blueprint(email_app)
+app.register_blueprint(token_app)
 
 # Configurações adicionais
 app.config['UPLOAD_FOLDER'] = 'uploads/'

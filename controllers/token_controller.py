@@ -22,3 +22,24 @@ def create_token_controller(user_id,type, user_id_sha):
             connection.close()
     else:
         return jsonify({"message": "Falha ao conectar com o banco de dados!"}), 500
+    
+def delete_token_controller(user_id):
+    connection = db_connection()
+    
+    if connection:
+        try:
+            token = Token.get_token_by_user_id_service(connection, user_id)
+            if not token:
+                return jsonify({"message": "Token não encontrado"}), 404
+            deleted = Token.delete_token_service(connection, user_id)
+            if deleted:
+                return jsonify({"message": "Token deletado"}), 200
+            else:
+                return jsonify({"message": "Falha ao deletar token"}), 500
+        except Exception as e:
+            print(f"Erro ao deletar token: {e}")
+            return jsonify({"message": "Erro interno no servidor"}), 500
+        finally:
+            connection.close()
+    else:
+        return jsonify({"message": "Falha ao conectar com o banco de dados!"}), 500
