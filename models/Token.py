@@ -28,10 +28,10 @@ class Token:
             cursor.close()
 
     @staticmethod
-    def delete_token_service(connection, user_id_sha):
+    def delete_token_service(connection, user_id):
         try:
             cursor = connection.cursor()
-            cursor.execute("DELETE FROM token WHERE id = %s", (user_id_sha,))
+            cursor.execute("DELETE FROM token WHERE user_id = %s", (user_id,))
             connection.commit()
             return True
 
