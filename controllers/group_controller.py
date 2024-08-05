@@ -26,7 +26,7 @@ def create_group_controller(teacherId,data):
             period
             )
     
-        group.create_group_service(connection)
+       
         inserted_id = group.create_group_service(connection)
         connection.close()
         
