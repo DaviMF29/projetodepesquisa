@@ -12,6 +12,7 @@ def create_questions_controller(data):
     option_4 = data.get("option_4").lower()
     option_5 = data.get("option_5").lower()
     answer = data.get("answer")
+    id_group = data.get("id_group")
 
     connection = db_connection()
     if connection:
@@ -23,7 +24,8 @@ def create_questions_controller(data):
             option_3,
             option_4,
             option_5,
-            answer
+            answer, 
+            id_group
         )
 
        
@@ -41,3 +43,7 @@ def create_questions_controller(data):
         return {"message": "Falha ao conectar com o banco de dados!"}, 500
 
 
+def get_questions_from_teacher(title):
+    connection = db_connection()
+    questions, title_group = Questions.get_questions_service_teacher(connection, title)
+    return {f"Questões do grupo {title_group}: ": questions}, 200
