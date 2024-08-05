@@ -31,7 +31,6 @@ class Group:
     def add_student_to_group_service(connection, group_id, student_id):
         try:
             cursor = connection.cursor()
-
             cursor.execute("SELECT id_student FROM group_table WHERE id = %s", (group_id,))
             group_data = cursor.fetchone()
             if not group_data:

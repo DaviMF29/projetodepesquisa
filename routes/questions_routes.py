@@ -13,3 +13,10 @@ def create_question_route():
     data = request.get_json()
     response, status_code = create_questions_controller(data)
     return jsonify(response), status_code
+
+
+@question_app.route("/api/question/<title>", methods=['GET'])
+@jwt_required()
+def get_questions_from_group_controller(title):
+    response, status_code = get_questions_from_teacher(title)
+    return jsonify(response), status_code
