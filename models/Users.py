@@ -168,3 +168,19 @@ class User:
             print(f"Erro ao tentar renomear a tabela: {e}")
             return False
 
+    def get_email_by_id(connection, user_id):
+        cursor = connection.cursor()
+        try:
+            cursor.execute(f"SELECT emailStudent AS email FROM aluno WHERE id = %s", (user_id,))
+            email = cursor.fetchone()
+            if email:
+                return email
+            else:
+                cursor.execute(f"SELECT emailTeacher AS email FROM teacher WHERE id = %s", (user_id,))
+                email = cursor.fetchone()
+                if email:
+                    return email
+                else:
+                    return None
+        finally:
+            cursor.close()

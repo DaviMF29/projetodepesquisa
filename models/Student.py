@@ -51,3 +51,7 @@ class Student(User):
     def delete_student_service(connection, user_id):
         return User.delete_user_service(connection, user_id, 'aluno')
     
+    @staticmethod
+    def get_email_by_id(connection, user_id):
+        return User.get_email_by_id(connection, user_id, 'aluno')
+    
