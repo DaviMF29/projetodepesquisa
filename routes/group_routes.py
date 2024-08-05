@@ -8,15 +8,13 @@ from flask_jwt_extended import get_jwt_identity
 group_app = Blueprint("group_app", __name__)
 
 @group_app.route("/api/group", methods=["POST"])
+@jwt_required()
 def create_group_route():
     data = request.get_json()
     
-    id_teacher = data["id_teacher"]
-    id_student = data["id_student"]
-    name = data["name"].lower()
-    period = data["period"]
-
-    response, status_code = create_group_controller(data)
+    id_teacher = get_jwt_identity()
+    
+    response, status_code = create_group_controller(id_teacher,data)
     return jsonify(response), status_code
 
 @group_app.route("/api/group/<groupId>/<studentId>", methods=["DELETE"])
