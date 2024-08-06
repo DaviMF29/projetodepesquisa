@@ -15,8 +15,8 @@ def create_question_route():
     return jsonify(response), status_code
 
 
-@question_app.route("/api/question/<title>", methods=['GET'])
+@question_app.route("/api/question/<title>/<groupId>", methods=['GET'])
 @jwt_required()
-def get_questions_from_group_controller(title):
-    response, status_code = get_questions_from_teacher(title)
+def get_questions_from_group_routes(title, groupId):
+    response, status_code = get_questions_from_teacher(title, groupId)
     return jsonify(response), status_code
