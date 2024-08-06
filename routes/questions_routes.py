@@ -21,4 +21,8 @@ def get_questions_from_group_routes(title, groupId):
     response, status_code = get_questions_from_teacher(title, groupId)
     return jsonify(response), status_code
 
-
+@question_app.route("/api/question/<title>/<groupId>", methods=["DELETE"])
+@jwt_required
+def delete_questions_from_group_routes(title, groupId):
+    response, status_code = delete_questions_from_group_controller(title, groupId)
+    return jsonify(response), status_code
