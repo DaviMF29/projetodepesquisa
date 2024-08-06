@@ -20,3 +20,5 @@ def create_question_route():
 def get_questions_from_group_routes(title, groupId):
     response, status_code = get_questions_from_teacher(title, groupId)
     return jsonify(response), status_code
+
+
