@@ -33,9 +33,14 @@ class Questions:
             cursor.close()
 
     @staticmethod
-    def delete_questions_service(connection, question, id_grupo):
+    def delete_questions_service(connection, title, id_grupo):
         cursor = connection.cursor()
-        cursor.execute(f"DELETE FROM questions WHERE question = {question} and id_grupo = {id_grupo}")
+        query = """DELETE FROM questions 
+        WHERE id_grupo IN ( 
+            SELECT g.id_grupo FROM group_table g 
+            WHERE g.title = %s AND g.id_grupo = %s)
+        """
+        cursor.execute(query, (title, id_grupo))
         connection.commit()
         cursor.close()
 
