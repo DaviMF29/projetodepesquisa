@@ -86,4 +86,4 @@ class Group:
         cursor = connection.cursor()
         cursor.execute(f"DELETE FROM student_group WHERE id_grupo = {groupID} and id_aluno = {studentID}")
         connection.commit()
-        cursor.close90
+        cursor.close()

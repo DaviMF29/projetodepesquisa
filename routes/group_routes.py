@@ -22,7 +22,7 @@ def delete_student_from_group_route(groupId, studentId):
     response, status_code = delete_student_from_group_controller(groupId, studentId)
     return jsonify(response), status_code
 
-@group_app.route("/api/group/<groupId>/<studentId>", methods=["PUT"])
+@group_app.route("/api/group/student/<groupId>/<studentId>", methods=["PUT"])
 @jwt_required()
 def add_student_to_group_route(groupId, studentId):
     connection = db_connection()
@@ -35,10 +35,3 @@ def get_students_from_group_route(title):
     response, status_code = get_students_from_group_controller(title)
     return jsonify(response), status_code
 
-@group_app.route("/api/group/<groupId>/<studentId>", methods=["DELETE"])
-@jwt_required
-def delete_student_from_groupp_routes(groupID, studentId):
-    connection = db_connection()
-    current_group_id = get_jwt_identity()
-    current_group_id = current_group_id['id_grupo']
-    response, status_code = delete_student_from_group_controller(connection, group_id)

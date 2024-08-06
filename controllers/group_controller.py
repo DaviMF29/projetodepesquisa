@@ -36,20 +36,10 @@ def create_group_controller(teacherId, data):
         return {"message": "Falha ao conectar com o banco de dados!"}, 500
         
 
-def delete_student_from_group_controller(current_user_id, group_id, student_id):
+def delete_student_from_group_controller(group_id, student_id):
     connection = db_connection()
-    if not connection:
-        return {"message": "Falha ao conectar com o banco de dados!"}, 500
-    verify_id_exists(connection, group_id, 'student')
-    try:
-        if current_user_id != group_id:
-            return {"message": "Sem permissão para deletar"}, 400
-        
-        Group.delete_student_from_group_service(connection, group_id)
-        return {"message": "Usuário deletado do grupo com sucesso!"}, 200
-    
-    except Exception as e:
-        return {"message": f"Erro ao deletar o usuário: {e}"}, 500
+    Group.delete_student_from_group_service(connection, group_id, student_id)
+    return {"message": "Student deleted from group"}, 200
 
 def add_student_to_group_controller(connection, group_id, student_id):
     Group.add_student_to_group_service(connection, group_id, student_id)
