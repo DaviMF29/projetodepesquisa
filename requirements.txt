@@ -4,3 +4,4 @@ python-dotenv
 flask_jwt_extended
 bcrypt
 flask_cors
+passlib
