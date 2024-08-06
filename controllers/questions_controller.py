@@ -51,4 +51,5 @@ def get_questions_from_teacher(title, groupId):
 
 def delete_questions_from_group_controller(title, groupID):
     connection = db_connection()
-    Questions.delete_questions_service()
+    Questions.delete_questions_service(connection, title, groupID)
+    return {"message": "Question deleted from group"}, 200

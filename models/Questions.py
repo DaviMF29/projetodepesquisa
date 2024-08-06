@@ -33,9 +33,9 @@ class Questions:
             cursor.close()
 
     @staticmethod
-    def delete_questions_service(connection, question):
+    def delete_questions_service(connection, question, id_grupo):
         cursor = connection.cursor()
-        cursor.execute(f"DELETE FROM questions WHERE question = {question}")
+        cursor.execute(f"DELETE FROM questions WHERE question = {question} and id_grupo = {id_grupo}")
         connection.commit()
         cursor.close()
 
