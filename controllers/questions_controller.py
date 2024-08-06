@@ -6,12 +6,12 @@ from models.Questions import Questions
 def create_questions_controller(data):
     
     question = data.get("question")
-    option_1 = data.get("option_1").lower()
-    option_2 = data.get("option_2").lower()
-    option_3 = data.get("option_3").lower()
-    option_4 = data.get("option_4").lower()
-    option_5 = data.get("option_5").lower()
-    answer = data.get("answer")
+    option_1 = data.get("a)").lower()
+    option_2 = data.get("b)").lower()
+    option_3 = data.get("c)").lower()
+    option_4 = data.get("d)").lower()
+    option_5 = data.get("e)").lower()
+    answer = data.get("answer").lower()
     id_group = data.get("id_group")
 
     connection = db_connection()
@@ -43,7 +43,12 @@ def create_questions_controller(data):
         return {"message": "Falha ao conectar com o banco de dados!"}, 500
 
 
-def get_questions_from_teacher(title):
+def get_questions_from_teacher(title, groupId):
     connection = db_connection()
-    questions, title_group = Questions.get_questions_service_teacher(connection, title)
+    questions, title_group = Questions.get_questions_service_teacher(connection, title, groupId)
     return {f"Questões do grupo {title_group}: ": questions}, 200
+
+
+def delete_questions_from_group_controller(title, groupID):
+    connection = db_connection()
+    Questions.delete_questions_service()

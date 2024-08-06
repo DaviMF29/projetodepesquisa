@@ -40,27 +40,28 @@ class Questions:
         cursor.close()
 
     @staticmethod
-    def get_questions_service_teacher(connection, title):
+    def get_questions_service_teacher(connection, title, groupId):
         with connection.cursor() as cursor:
             select_query = """
-            SELECT q.question, q.option_1, q.option_2, q.option_3, q.option_4, q.option_5, g.title
+            SELECT q.question, q.option_1, q.option_2, q.option_3, q.option_4, q.option_5, q.answer, g.title
             FROM questions q
             JOIN group_table g 
             ON q.group_id = g.id_grupo 
-            WHERE g.title = %s"""
+            WHERE g.title = %s and g.id_grupo = %s"""
 
-            cursor.execute(select_query, (title,))
+            cursor.execute(select_query, (title, groupId,))
             results = cursor.fetchall()
 
             quizzes = []
             for row in results:
                 quiz = {
                     "Question": row[0],
-                    "Option 1": row[1],
-                    "Option 2": row[2],
-                    "Option 3": row[3],
-                    "Option 4": row[4],
-                    "Option 5": row[5]
+                    "a)": row[1],
+                    "b)": row[2],
+                    "c)": row[3],
+                    "d)": row[4],
+                    "e)": row[5],
+                    "RESPOSTA:": row[6]
                 }
                 quizzes.append(quiz)
             
