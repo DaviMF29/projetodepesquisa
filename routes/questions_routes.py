@@ -15,14 +15,16 @@ def create_question_route():
     return jsonify(response), status_code
 
 
-@question_app.route("/api/question/<title>/<groupId>", methods=['GET'])
+@question_app.route("/api/question/<groupId>", methods=['GET'])
 @jwt_required()
-def get_questions_from_group_routes(title, groupId):
-    response, status_code = get_questions_from_teacher(title, groupId)
+def get_questions_from_group_routes(groupId):
+    data = request.get_json()
+    response, status_code = get_questions_from_teacher(groupId, data)
     return jsonify(response), status_code
 
-@question_app.route("/api/question/<title>/<groupId>", methods=["DELETE"])
+@question_app.route("/api/question/<groupId>", methods=["DELETE"])
 @jwt_required()
-def delete_questions_from_group_routes(title, groupId):
-    response, status_code = delete_questions_from_group_controller(title, groupId)
+def delete_questions_from_group_routes(groupId):
+    data = request.get_json()
+    response, status_code = delete_questions_from_group_controller(data, groupId)
     return jsonify(response), status_code

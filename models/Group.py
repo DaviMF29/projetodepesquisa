@@ -43,16 +43,17 @@ class Group:
 
             cursor.execute("INSERT INTO student_group (id_aluno, id_grupo) VALUES (%s, %s)", (student_id, group_id))
             connection.commit()
-
-            cursor.close()
-            return True
+            inserted_id = cursor.lastrowid 
+            return inserted_id
 
         except Error as e:
             print(f"Error adding student to group: {e}")
-            return False
+            
+        finally:
+            cursor.close()
 
     @staticmethod
-    def get_students_from_group_service(connection, title):
+    def get_students_from_group_service(connection, title, group_Id):
         with connection.cursor() as cursor:
             query = """
             SELECT p.nameTeacher, e.nameStudent, g.title, g.period
@@ -60,9 +61,9 @@ class Group:
                 JOIN professor p ON g.id_teacher = p.id
                 JOIN student_group sg ON g.id_grupo = sg.id_grupo
                 JOIN aluno e ON sg.id_aluno = e.id
-                WHERE g.title = %s
+                WHERE g.title = %s AND g.id_grupo = %s
             """
-            cursor.execute(query, (title,))
+            cursor.execute(query, (title, group_Id))
             results = cursor.fetchall()
 
         teacher = {
