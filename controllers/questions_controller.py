@@ -38,18 +38,19 @@ def create_questions_controller(data):
         else:
             return {"message": "Falha ao as questões"}, 500
 
-    
     else:
         return {"message": "Falha ao conectar com o banco de dados!"}, 500
 
 
-def get_questions_from_teacher(title, groupId):
+def get_questions_from_teacher(groupId, data):
     connection = db_connection()
+    title = data.get('title').lower()
     questions, title_group = Questions.get_questions_service_teacher(connection, title, groupId)
     return {f"Questões do grupo {title_group}: ": questions}, 200
 
 
-def delete_questions_from_group_controller(title, groupID):
+def delete_questions_from_group_controller(data, groupID):
     connection = db_connection()
+    title = data.get('title').lower()
     Questions.delete_questions_service(connection, title, groupID)
     return {"message": "Question deleted from group"}, 200

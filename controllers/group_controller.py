@@ -41,11 +41,17 @@ def delete_student_from_group_controller(group_id, student_id):
     Group.delete_student_from_group_service(connection, group_id, student_id)
     return {"message": "Student deleted from group"}, 200
 
-def add_student_to_group_controller(connection, group_id, student_id):
-    Group.add_student_to_group_service(connection, group_id, student_id)
-    return {"message": "Student added to group"}, 200
-
-def get_students_from_group_controller(title):
+def add_student_to_group_controller(group_id, student_id):
     connection = db_connection()
-    teacher,students = Group.get_students_from_group_service(connection,title)
+    inserted_id = Group.add_student_to_group_service(connection, group_id, student_id)
+
+    if inserted_id is not None:
+        return {"message": "Student added to group", "user_id": inserted_id}, 200
+    else:
+        return {"message": "Falha ao criar usuário"}, 50
+
+def get_students_from_group_controller(data, group_id):
+    connection = db_connection()
+    title = data.get('title').lower()
+    teacher,students = Group.get_students_from_group_service(connection,title, group_id)
     return {"Group": teacher,"Students":students}, 200
