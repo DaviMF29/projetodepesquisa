@@ -38,7 +38,7 @@ def get_students_from_group_route(id_group):
 
 
 @group_app.route("/api/group/<groupId>", methods=["DELETE"])
-@jwt_required
+@jwt_required()
 def delete_student_from_group_routes(groupId):
     data = request.get_json()
     current_user_id = get_jwt_identity()    
