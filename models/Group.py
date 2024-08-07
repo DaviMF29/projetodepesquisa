@@ -97,6 +97,22 @@ class Group:
         except Exception as e:
             print(f"Error adding student to group: {e}")
             return None
+        
+    @staticmethod
+    def delete_group_service(connection, group_id):
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("DELETE FROM student_group WHERE id_grupo = %s", (group_id,))
+
+                cursor.execute("DELETE FROM group_table WHERE id_grupo = %s", (group_id,))
+                connection.commit()
+
+            return {"message": "Grupo excluído com sucesso"}, 200
+
+        except Exception as e:
+            print(f"Erro ao excluir o grupo: {e}")
+            return {"message": "Erro ao excluir o grupo"}, 500
+
 
 
 

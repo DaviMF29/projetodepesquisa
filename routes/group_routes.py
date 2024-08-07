@@ -37,12 +37,19 @@ def get_students_from_group_route(id_group):
     return jsonify(response), status_code
 
 
-@group_app.route("/api/group/<groupId>", methods=["DELETE"])
+@group_app.route("/api/group/student/<groupId>", methods=["DELETE"])
 @jwt_required()
 def delete_student_from_group_routes(groupId):
     data = request.get_json()
     current_user_id = get_jwt_identity()    
     studentId = data["studentId"]
     response, status_code = delete_student_from_group_controller(current_user_id,groupId, studentId)
+    return jsonify(response), status_code
+
+@group_app.route("/api/group/<groupId>", methods=["DELETE"])
+@jwt_required()
+def delete_group_route(groupId):
+    current_user_id = get_jwt_identity()
+    response, status_code = delete_group_controller(current_user_id,groupId)
     return jsonify(response), status_code
 
