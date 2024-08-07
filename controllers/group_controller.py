@@ -11,8 +11,8 @@ from db.bd_mysql import db_connection
 
 def create_group_controller(teacherId, data):
 
-    id_teacher = teacherId
-    name = data.get("name").lower()
+    id_teacher = teacherId["id"]
+    name = data.get("title").lower()
     period = data.get("period")
 
     connection = db_connection()
@@ -23,8 +23,7 @@ def create_group_controller(teacherId, data):
             name,
             period
             )
-    
-       
+        print(id_teacher)
         inserted_id = group.create_group_service(connection)
         connection.close()
         
@@ -40,12 +39,11 @@ def delete_student_from_group_controller(current_user_id, group_id, student_id):
     connection = db_connection()
     if not connection:
         return {"message": "Falha ao conectar com o banco de dados!"}, 500
-    verify_id_exists(connection, group_id, 'student')
     try:
-        if current_user_id != group_id:
+        if current_user_id != Group.get_teacher_id_from_group_service(connection, group_id):
             return {"message": "Sem permissão para deletar"}, 400
         
-        Group.delete_student_from_group_service(connection, group_id)
+        Group.delete_student_from_group_service(connection, group_id, student_id)
         return {"message": "Usuário deletado do grupo com sucesso!"}, 200
     
     except Exception as e:
