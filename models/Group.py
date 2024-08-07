@@ -27,43 +27,17 @@ class Group:
 
 
     @staticmethod
-    def add_student_to_group_service(connection, group_id, student_id):
-        try:
-            cursor = connection.cursor()
-            '''cursor.execute("SELECT id_student FROM group_table WHERE id = %s", (group_id,))
-            group_data = cursor.fetchone()
-            if not group_data:
-                cursor.close()
-                return False
-
-            student_ids = json.loads(group_data[0]) if group_data[0] else []
-            if student_id not in student_ids:
-                student_ids.append(student_id)
-                student_ids_json = json.dumps(student_ids)'''
-
-            cursor.execute("INSERT INTO student_group (id_aluno, id_grupo) VALUES (%s, %s)", (student_id, group_id))
-            connection.commit()
-            inserted_id = cursor.lastrowid 
-            return inserted_id
-
-        except Error as e:
-            print(f"Error adding student to group: {e}")
-            
-        finally:
-            cursor.close()
-
-    @staticmethod
-    def get_students_from_group_service(connection, title, group_Id):
+    def get_students_from_group_service(connection, id_group):
         with connection.cursor() as cursor:
             query = """
-            SELECT p.nameTeacher, e.nameStudent, g.title, g.period
+                SELECT p.nameTeacher, e.nameStudent, g.title, g.period, e.id
                 FROM group_table g
                 JOIN professor p ON g.id_teacher = p.id
                 JOIN student_group sg ON g.id_grupo = sg.id_grupo
                 JOIN aluno e ON sg.id_aluno = e.id
-                WHERE g.title = %s AND g.id_grupo = %s
+                WHERE g.id_grupo = %s
             """
-            cursor.execute(query, (title, group_Id))
+            cursor.execute(query, (id_group,))
             results = cursor.fetchall()
 
         teacher = {
@@ -74,14 +48,15 @@ class Group:
 
         students = [
             {
-                "nameStudent": row[1]
+                "nameStudent": row[1],
+                "idStudent": row[4]
                 
             }
             for row in results
         ]
 
         return teacher, students
-    
+
     @staticmethod
     def delete_student_from_group_service(connection, groupID, studentID):
         cursor = connection.cursor()
@@ -96,5 +71,24 @@ class Group:
         teacherID = cursor.fetchone()
         cursor.close()
         return teacherID[0]
+
+    @staticmethod
+    def add_student_to_group_service(connection, group_id, student_id):
+        try:
+            with connection.cursor() as cursor:
+                print(f"Adding student with ID {student_id} to group with ID {group_id}")
+                cursor.execute(
+                    "INSERT INTO student_group (id_aluno, id_grupo) VALUES (%s, %s)",
+                    (student_id, group_id)
+                )
+                connection.commit()
+                inserted_id = cursor.lastrowid
+                print(f"Inserted ID: {inserted_id}")
+                return inserted_id
+        except Exception as e:
+            print(f"Error adding student to group: {e}")
+            return None
+
+
 
         
