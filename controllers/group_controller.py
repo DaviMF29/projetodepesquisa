@@ -1,5 +1,6 @@
 import base64
 import bcrypt
+from flask import request
 from db.firebase import *
 from models.Group import Group
 from db.bd_mysql import db_connection
@@ -51,15 +52,32 @@ def delete_student_from_group_controller(current_user_id,group_id, student_id):
 
 def add_student_to_group_controller(group_id, student_id):
     connection = db_connection()
-    inserted_id = Group.add_student_to_group_service(connection, group_id, student_id)
 
-    if inserted_id is not None:
-        return {"message": "Student added to group", "user_id": inserted_id}, 200
-    else:
-        return {"message": "Falha ao criar usuário"}, 50
+    idstudent = int(student_id)
 
-def get_students_from_group_controller(data, group_id):
+    try:
+
+        group, students = Group.get_students_from_group_service(connection, group_id)
+        for i in range(len(students)):
+            if students[i]["idStudent"] == idstudent:
+                return {"message": "Estudante já está no grupo"}, 400
+
+
+        inserted_id = Group.add_student_to_group_service(connection, group_id, student_id)
+
+        if inserted_id is not None:
+            return {"message": "Estudante adicionado ao grupo"}, 200
+        else:
+            return {"message": "Falha ao adicionar estudante ao grupo"}, 500
+
+    except Exception as e:
+        print(f"Erro ao adicionar estudante ao grupo: {e}")
+        return {"message": "Erro interno do servidor"}, 500
+
+    finally:
+        connection.close()
+
+def get_students_from_group_controller(id_group):
     connection = db_connection()
-    title = data.get('title').lower()
-    teacher,students = Group.get_students_from_group_service(connection,title, group_id)
+    teacher,students = Group.get_students_from_group_service(connection,id_group)
     return {"Group": teacher,"Students":students}, 200
