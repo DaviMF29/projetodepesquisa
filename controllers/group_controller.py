@@ -29,7 +29,7 @@ def create_group_controller(teacherId, data):
         connection.close()
         
         if inserted_id is not None:
-            return {"message": 'Grupo criado com sucesso!', "user_id": inserted_id}, 200
+            return {"message": 'Grupo criado com sucesso!', "group_id": inserted_id}, 200
         else:
             return {"message": "Falha ao criar usuário"}, 500
     else:
@@ -41,9 +41,8 @@ def delete_student_from_group_controller(current_user_id,group_id, student_id):
     if not connection:
         return {"message": "Falha ao conectar com o banco de dados!"}, 500
     try:
-        if current_user_id != Group.get_teacher_id_from_group_service(connection, group_id):
+        if current_user_id["id"] != Group.get_teacher_id_from_group_service(connection, group_id):
             return {"message": "Sem permissão para deletar"}, 400
-        
         Group.delete_student_from_group_service(connection, group_id, student_id)
         return {"message": "Usuário deletado do grupo com sucesso!"}, 200
     
@@ -54,14 +53,13 @@ def add_student_to_group_controller(group_id, student_id):
     connection = db_connection()
 
     idstudent = int(student_id)
-
     try:
-
         group, students = Group.get_students_from_group_service(connection, group_id)
-        for i in range(len(students)):
-            if students[i]["idStudent"] == idstudent:
-                return {"message": "Estudante já está no grupo"}, 400
 
+        if students is not None:
+            for i in range(len(students)):
+                if students[i]["idStudent"] == idstudent:
+                    return {"message": "Estudante já está no grupo"}, 400
 
         inserted_id = Group.add_student_to_group_service(connection, group_id, student_id)
 

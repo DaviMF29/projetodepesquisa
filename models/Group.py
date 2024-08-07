@@ -33,29 +33,38 @@ class Group:
                 SELECT p.nameTeacher, e.nameStudent, g.title, g.period, e.id
                 FROM group_table g
                 JOIN professor p ON g.id_teacher = p.id
-                JOIN student_group sg ON g.id_grupo = sg.id_grupo
-                JOIN aluno e ON sg.id_aluno = e.id
+                LEFT JOIN student_group sg ON g.id_grupo = sg.id_grupo
+                LEFT JOIN aluno e ON sg.id_aluno = e.id
                 WHERE g.id_grupo = %s
             """
             cursor.execute(query, (id_group,))
             results = cursor.fetchall()
 
-        teacher = {
-            "nameTeacher": results[0][0],
-            "title": results[0][2],
-            "period": results[0][3]
-        }
-
-        students = [
-            {
-                "nameStudent": row[1],
-                "idStudent": row[4]
-                
+        if not results:
+            teacher = {
+                "nameTeacher": "Professor não encontrado",
+                "title": "Grupo não encontrado",
+                "period": "Desconhecido"
             }
-            for row in results
-        ]
+            students = []
+        else:
+            teacher = {
+                "nameTeacher": results[0][0],
+                "title": results[0][2],
+                "period": results[0][3]
+            }
+
+            students = [
+                {
+                    "nameStudent": row[1],
+                    "idStudent": row[4]
+                }
+                for row in results
+                if row[1] is not None  
+            ]
 
         return teacher, students
+
 
     @staticmethod
     def delete_student_from_group_service(connection, groupID, studentID):
@@ -67,7 +76,7 @@ class Group:
     @staticmethod
     def get_teacher_id_from_group_service(connection, id_group):
         cursor = connection.cursor()
-        cursor.execute(f"SELECT id_teacher FROM group_table WHERE id_group = {id_group}")
+        cursor.execute(f"SELECT id_teacher FROM group_table WHERE id_grupo = {id_group}")
         teacherID = cursor.fetchone()
         cursor.close()
         return teacherID[0]
