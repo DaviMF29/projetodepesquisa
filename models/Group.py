@@ -86,4 +86,14 @@ class Group:
         cursor = connection.cursor()
         cursor.execute(f"DELETE FROM student_group WHERE id_grupo = {groupID} and id_aluno = {studentID}")
         connection.commit()
-        cursor.close90
+        cursor.close()
+
+    @staticmethod
+    def get_teacher_id_from_group_service(connection, id_group):
+        cursor = connection.cursor()
+        cursor.execute(f"SELECT id_teacher FROM group_table WHERE id_group = {id_group}")
+        teacherID = cursor.fetchone()
+        cursor.close()
+        return teacherID[0]
+
+        
