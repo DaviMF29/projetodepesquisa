@@ -94,3 +94,15 @@ def delete_group_controller(current_user_id, group_id):
         return {"message": f"Erro ao deletar o grupo: {e}"}, 500
     finally:
         connection.close()
+
+def get_group_by_teacher_id_controller(teacher_id):
+    connection = db_connection()
+    if not connection:
+        return {"message": "Falha ao conectar com o banco de dados!"}, 500
+    try:
+        groups = Group.get_group_by_teacher_id_service(connection, teacher_id)
+        return {"groups": groups}, 200
+    except Exception as e:
+        return {"message": f"Erro ao buscar grupos: {e}"}, 500
+    finally:
+        connection.close()

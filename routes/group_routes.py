@@ -53,3 +53,10 @@ def delete_group_route(groupId):
     response, status_code = delete_group_controller(current_user_id,groupId)
     return jsonify(response), status_code
 
+@group_app.route("/api/group/teacher", methods=["GET"])
+@jwt_required()
+def get_groups_from_teacher_route():
+    teacherId = get_jwt_identity()
+    response, status_code = get_group_by_teacher_id_controller(teacherId["id"])
+    return jsonify(response), status_code
+

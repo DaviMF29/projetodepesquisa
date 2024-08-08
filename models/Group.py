@@ -112,6 +112,28 @@ class Group:
         except Exception as e:
             print(f"Erro ao excluir o grupo: {e}")
             return {"message": "Erro ao excluir o grupo"}, 500
+        
+    @staticmethod
+    def get_group_by_teacher_id_service(connection, teacher_id):
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM group_table WHERE id_teacher = %s", (teacher_id,))
+                results = cursor.fetchall()
+
+                dados = [
+                        {
+                            "group_id": row[0],
+                            "title": row[2],
+                            "period": row[3]
+                        }
+                        for row in results
+                ]
+
+                return dados
+
+        except Exception as e:
+            print(f"Error getting group by teacher ID: {e}")
+            return None
 
 
 
