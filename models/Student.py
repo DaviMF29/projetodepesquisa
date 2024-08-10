@@ -2,8 +2,8 @@ from models.Users import User
 
 
 class Student(User):
-    def __init__(self, name, email, password, birth=None, gender=None, institution=None, period=None, certificate=None, state=None, city=None, matricula=None):
-        super().__init__(name, email, password, birth, gender, institution, certificate, state, city, matricula)
+    def __init__(self, name, email, password, birth=None, gender=None, institution=None, period=None, state=None, city=None, matricula=None):
+        super().__init__(name, email, password, birth, gender, institution, state, city, matricula)
         self.period = period
 
     def to_db_format(self):
@@ -15,7 +15,6 @@ class Student(User):
             'genderStudent': self.gender,
             'institutionStudent': self.institution,
             'periodStudent': self.period,
-            'certificateStudent': self.certificate,
             'stateStudent': self.state,
             'cityStudent': self.city,
             'matriculaStudent': self.matricula
