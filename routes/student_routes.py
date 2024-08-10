@@ -51,7 +51,7 @@ def add_user_router():
 
 
 @user_app.route("/api/student/<user_id>", methods=['PATCH'])
-@jwt_required()
+
 def update_user(user_id):
     data = request.get_json()
 
@@ -70,7 +70,6 @@ def update_user(user_id):
         return jsonify({"error": str(e)}), 500
 
 @user_app.route("/api/student/<user_id>", methods=["DELETE"])
-@jwt_required()
 def delete_users(user_id):
     current_user_id = get_jwt_identity()
     current_user_id = current_user_id['id']
