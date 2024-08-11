@@ -30,5 +30,5 @@ def verify_id_exists(connection, user_id, user_type):
     elif user_type == 'teacher':
         user = Teacher.get_teacher_by_id_service(connection, user_id)
     if not user:
-        abort(404, {"message": "User not found"})
+        return abort(404, description="Usuário não encontrado")
     return user

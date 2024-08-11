@@ -94,10 +94,20 @@ def delete_teacher_controller(current_user_id, user_id):
         connection.close()
 
     
-def get_teacher_by_id_email_controller(email):
+def get_teacher_by_email_controller(email):
     connection = db_connection()
     if connection:
         user = Teacher.get_teacher_by_email_service(connection, email)
+        connection.close()
+        return user
+    else:
+        return {"message": "Falha ao conectar com o banco de dados!"}, 500
+    
+def get_teacher_by_id_controller(user_id):
+    connection = db_connection()
+    if connection:
+        verify_id_exists(connection,user_id,'teacher')
+        user = Teacher.get_teacher_by_id_service(connection, user_id)
         connection.close()
         return user
     else:
