@@ -134,6 +134,19 @@ class Group:
         except Exception as e:
             print(f"Error getting group by teacher ID: {e}")
             return None
+        
+
+    def update_group_service(self, connection,field,value,group_id):
+        try:
+            with connection.cursor() as cursor:
+                sql = f"UPDATE group_table SET {field} = %s WHERE id_grupo = %s" 
+                cursor.execute(sql, (value,group_id,))
+                connection.commit()
+                return {"message": "Grupo atualizado com sucesso"}, 200
+
+        except Exception as e:
+            print(f"Error updating group: {e}")
+            return {"message": "Erro ao atualizar o grupo"}, 500
 
 
 

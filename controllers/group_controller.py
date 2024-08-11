@@ -106,3 +106,20 @@ def get_group_by_teacher_id_controller(teacher_id):
         return {"message": f"Erro ao buscar grupos: {e}"}, 500
     finally:
         connection.close()
+
+def update_group_controller(teacher_id,group_id, data):
+    connection = db_connection()
+    if not connection:
+        return {"message": "Falha ao conectar com o banco de dados!"}, 500
+    
+    teacherId_group = Group.get_teacher_id_from_group_service(connection, group_id)
+    if int(teacher_id["id"]) != teacherId_group:
+        return {"message": "Sem permissão para atualizar"}, 400
+    try:
+        for field, value in data.items():
+            Group.update_group_service(connection, group_id, field, value)
+        return {"message": 'Atualização feita com sucesso!'}, 200
+    except Exception as e:
+        return {"error": str(e)}, 500
+    finally:
+        connection.close()
