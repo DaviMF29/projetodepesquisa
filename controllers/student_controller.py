@@ -5,8 +5,7 @@ from db.bd_mysql import db_connection
 
 from middleware.global_middleware import (
     verify_email_registered,
-    verify_id_exists,
-)
+    verify_id_exists,verify_email_student_registered,)
 
 def add_student_controller(data):
     try:
@@ -69,6 +68,8 @@ def update_student_controller(user_id, data):
     connection = db_connection()
     if connection:
         verify_id_exists(connection, user_id, 'student')
+        verify_email_student_registered(connection, data.get('emailStudent'))
+            
         try:
             for field, value in data.items():
                 Student.update_student_service(connection, user_id, field, value)
