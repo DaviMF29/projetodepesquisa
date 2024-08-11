@@ -67,7 +67,7 @@ def update_user():
         return jsonify({"error": "Nenhum campo enviado para atualização"}), 400
 
     try:
-        update_student_controller(user_id, data)
+        update_student_controller(user_id["id"], data)
         return jsonify({"message": "Usuário atualizado"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
