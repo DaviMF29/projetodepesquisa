@@ -55,7 +55,7 @@ def add_student_controller(data):
         return {"message": "Internal Server Error"}, 500
 
 
-def get_student_controller():
+def get_students_controller():
     connection = db_connection()
     if connection:
         users = Student.get_all_student_service(connection)

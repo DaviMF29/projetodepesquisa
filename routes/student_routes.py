@@ -83,7 +83,7 @@ def delete_users(user_id):
 
 @user_app.route('/api/students', methods=['GET'])
 def get_users_route():
-    response = get_student_controller()
+    response = get_students_controller()
     return jsonify(response)
 
 
@@ -101,5 +101,5 @@ def rename_table():
 
 @user_app.route('/api/student/<user_id>', methods=['GET'])
 def get_user_route(user_id):
-    response = get_student_controller(user_id)
+    response = get_student_by_id_controller(user_id)
     return jsonify(response)
