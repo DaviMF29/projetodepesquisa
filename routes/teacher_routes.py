@@ -42,8 +42,14 @@ def add_user_router():
 
     data['passwordTeacher'] = hashed_password.decode('utf-8')  
 
-    response, status_code = add_teacher_controller(data)
-    return jsonify(response), status_code
+    result = add_teacher_controller(data)
+
+    if len(result) ==2:
+        response,status_code = result
+        return jsonify(response), status_code
+
+    response, access_token, status_code = result
+    return jsonify(response), status_code,access_token
 
 @teacher_app.route("/api/teacher/<user_id>", methods=['PATCH'])
 @jwt_required()

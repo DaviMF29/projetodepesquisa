@@ -46,8 +46,15 @@ def add_user_router():
         'passwordStudent': hashed_password
     }
 
-    response, status_code = add_student_controller(data)
-    return jsonify(response), status_code
+    result = add_student_controller(data)
+
+    if len(result) ==2:
+        response,status_code = result
+        return jsonify(response), status_code
+
+    response, access_token, status_code = result
+    return jsonify(response), status_code, access_token
+ 
 
 
 @user_app.route("/api/student/<user_id>", methods=['PATCH'])
