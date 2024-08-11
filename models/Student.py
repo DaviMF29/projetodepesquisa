@@ -17,7 +17,7 @@ class Student(User):
             'periodStudent': self.period,
             'stateStudent': self.state,
             'cityStudent': self.city,
-            'registartionStudent': self.registration
+            'registrationStudent': self.registration
         }
 
         
