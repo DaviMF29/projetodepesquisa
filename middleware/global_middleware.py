@@ -13,6 +13,16 @@ def verify_email_registered(connection, email):
         user = Teacher.get_teacher_by_email_service(connection, email)
     return user is not None
 
+def verify_email_student_registered(connection, email):
+    user = Student.get_student_by_email_service(connection, email)
+    if user:
+        return {"message": "Email já cadastrado!"}, 400
+    
+def verify_email_teacher_registered(connection, email):
+    user = Teacher.get_teacher_by_email_service(connection, email)
+    if user:
+        return {"message": "Email já cadastrado!"}, 400
+
 @staticmethod
 def verify_id_exists(connection, user_id, user_type):
     if user_type == 'student':

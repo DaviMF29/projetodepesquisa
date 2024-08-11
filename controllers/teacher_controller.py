@@ -3,6 +3,7 @@ from models.Teacher import Teacher
 from db.bd_mysql import db_connection
 
 from middleware.global_middleware import (
+    verify_email_teacher_registered,
     verify_id_exists
     ,verify_email_registered)
 
@@ -60,6 +61,7 @@ def update_teacher_controller(user_id, data):
     connection = db_connection()
     if connection:
         verify_id_exists(connection, user_id, 'teacher')
+        verify_email_teacher_registered(connection, data.get('emailTeacher').lower())
         try:
             for field, value in data.items():
                 Teacher.update_teacher_service(connection, user_id, field, value)
