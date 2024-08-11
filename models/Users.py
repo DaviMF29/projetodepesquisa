@@ -1,7 +1,7 @@
 from aifc import Error
 
 class User:
-    def __init__(self, name, email, password, birth, gender=None, institution=None, formation=None, state=None, city=None, matricula=None):
+    def __init__(self, name, email, password, birth, gender=None, institution=None, formation=None, state=None, city=None, registration=None):
         self.id = None
         self.name = name
         self.email = email
@@ -9,10 +9,10 @@ class User:
         self.birth = birth
         self.gender = gender
         self.institution = institution
-        self.formation = formation
         self.state = state
         self.city = city
-        self.matricula = matricula
+        self.formation = formation
+        self.registration = registration
 
 
     def create_user_service(self, connection, user_type, user_data):
