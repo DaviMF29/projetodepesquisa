@@ -51,21 +51,16 @@ def add_user_router():
     response, access_token, status_code = result
     return jsonify(response), status_code,access_token
 
-@teacher_app.route("/api/teacher/<user_id>", methods=['PATCH'])
+@teacher_app.route("/api/teacher", methods=['PATCH'])
 @jwt_required()
-def update_user(user_id):
+def update_user():
     data = request.get_json()
-
-    if not data:
-        return jsonify({"error": "Dados inválidos"}), 400
-
-    if len(data) == 0:
+    user_id = get_jwt_identity()
+    if not data or len(data) == 0:
         return jsonify({"error": "Nenhum campo enviado para atualização"}), 400
 
-    field, value = next(iter(data.items()))  # Obtém o primeiro par chave-valor
-
     try:
-        update_teacher_controller(user_id, field, value)
+        update_teacher_controller(user_id, data)
         return jsonify({"message": "Usuário atualizado"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
