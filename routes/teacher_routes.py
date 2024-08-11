@@ -91,20 +91,20 @@ def rename_table():
     response = Teacher.rename_table(current_name, new_name)
     return jsonify(response)
 
-@teacher_app.route('/api/teacher/<email>', methods=['GET'])
+@teacher_app.route('/api/teacher/email/<email>', methods=['GET'])
 def get_teacher_by_id_email(email):
-    user = get_teacher_by_id_email_controller(email)
+    user = get_teacher_by_email_controller(email)
     if user:
         return jsonify(user)
     else:
         return jsonify({"message": "Usuário não encontrado!"}), 404
 
-@teacher_app.route('/api/teachers/', methods=['GET'])
+@teacher_app.route('/api/teachers', methods=['GET'])
 def get_all_teachers():
     teachers = get_teacher_controller()
     return jsonify(teachers)
 
 @teacher_app.route('/api/teacher/<user_id>', methods=['GET'])
 def get_user_route(user_id):
-    response = get_teacher_controller(user_id)
+    response = get_teacher_by_id_controller(user_id)
     return jsonify(response)
