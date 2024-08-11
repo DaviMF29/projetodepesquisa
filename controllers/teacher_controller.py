@@ -1,3 +1,4 @@
+from flask_jwt_extended import create_access_token
 from models.Teacher import Teacher
 from db.bd_mysql import db_connection
 
@@ -28,13 +29,20 @@ def add_teacher_controller(data):
             birth=birth,
             password=password
         )
-        teacher_id = teacher.create_teacher_service(connection)
-        connection.close()
-        
-        if teacher_id:
-            return {"id": teacher_id, "message": 'Usuário criado com sucesso!'}, 201
+        inserted_id = teacher.create_teacher_service(connection)
+
+        if inserted_id is not None:
+            try:
+                user = Teacher.get_teacher_by_id_service(connection, inserted_id)
+                access_token = create_access_token(identity={'id': str(user['id']), 'type': 'teacher'})
+            except Exception as e:
+                print(f"Erro ao criar token ou buscar usuário: {e}")
+                return {"message": "Erro ao criar usuário, mas usuário foi salvo"}, 500
+
+            connection.close()
+            return {"message": "Usuário criado com sucesso!", "user_id": inserted_id, "access_token": access_token}, 201
         else:
-            return {"message": "Erro ao criar usuário!"}, 500
+            return {"message": "Erro ao criar usuário"}, 500
         
     else:
         return {"message": "Falha ao conectar com o banco de dados!"}, 500
@@ -48,12 +56,13 @@ def get_teacher_controller():
     else:
         return {"message": "Falha ao conectar com o banco de dados!"}, 500
 
-def update_teacher_controller(user_id, field, value):
+def update_teacher_controller(user_id, data):
     connection = db_connection()
     if connection:
-        verify_id_exists(connection,user_id,'teacher')
+        verify_id_exists(connection, user_id, 'teacher')
         try:
-            Teacher.update_teacher_service(connection, user_id, field, value)
+            for field, value in data.items():
+                Teacher.update_teacher_service(connection, user_id, field, value)
             connection.close()
             return {"message": 'Atualização feita com sucesso!'}, 200
         except Exception as e:

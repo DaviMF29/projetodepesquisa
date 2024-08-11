@@ -46,28 +46,32 @@ def add_user_router():
         'passwordStudent': hashed_password
     }
 
-    response, status_code = add_student_controller(data)
-    return jsonify(response), status_code
+    result = add_student_controller(data)
+
+    if len(result) ==2:
+        response,status_code = result
+        return jsonify(response), status_code
+
+    response, access_token, status_code = result
+    return jsonify(response), status_code, access_token
+ 
 
 
-@user_app.route("/api/student/<user_id>", methods=['PATCH'])
+@user_app.route("/api/student", methods=['PATCH'])
 @jwt_required()
-def update_user(user_id):
+def update_user():
     data = request.get_json()
+    user_id = get_jwt_identity()
 
-    if not data:
-        return jsonify({"error": "Dados inválidos"}), 400
-
-    if len(data) == 0:
+    if not data or len(data) == 0:
         return jsonify({"error": "Nenhum campo enviado para atualização"}), 400
 
-    field, value = next(iter(data.items()))
-
     try:
-        update_student_controller(user_id, field, value)
+        update_student_controller(user_id, data)
         return jsonify({"message": "Usuário atualizado"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @user_app.route("/api/student/<user_id>", methods=["DELETE"])
 @jwt_required()

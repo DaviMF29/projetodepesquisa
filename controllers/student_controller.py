@@ -1,4 +1,5 @@
 from flask import jsonify
+from flask_jwt_extended import create_access_token
 from models.Student import Student
 from db.bd_mysql import db_connection
 
@@ -34,10 +35,17 @@ def add_student_controller(data):
             )
 
             inserted_id = student.create_student_service(connection)
-            connection.close()
 
             if inserted_id is not None:
-                return {"message": "Usuário criado com sucesso!", "user_id": inserted_id}, 201
+                try:
+                    user = Student.get_student_by_id_service(connection, inserted_id)
+                    access_token = create_access_token(identity={'id': str(user['id']), 'type': 'student'})
+                except Exception as e:
+                    print(f"Erro ao criar token ou buscar usuário: {e}")
+                    return {"message": "Erro ao criar usuário, mas usuário foi salvo"}, 500
+
+                connection.close()
+                return {"message": "Usuário criado com sucesso!", "user_id": inserted_id, "access_token": access_token}, 201
             else:
                 return {"message": "Erro ao criar usuário"}, 500
         else:
@@ -46,6 +54,7 @@ def add_student_controller(data):
     except Exception as e:
         print(f"Erro no controlador de aluno: {e}")
         return {"message": "Internal Server Error"}, 500
+
 
 def get_student_controller():
     connection = db_connection()
@@ -56,18 +65,20 @@ def get_student_controller():
     else:
         return {"message": "Falha ao conectar com o banco de dados!"}, 500
 
-def update_student_controller(user_id, field, value):
+def update_student_controller(user_id, data):
     connection = db_connection()
     if connection:
-        verify_id_exists(connection,user_id,'student')
+        verify_id_exists(connection, user_id, 'student')
         try:
-            Student.update_student_service(connection, user_id, field, value)
+            for field, value in data.items():
+                Student.update_student_service(connection, user_id, field, value)
             connection.close()
             return {"message": 'Atualização feita com sucesso!'}, 200
         except Exception as e:
             return {"error": str(e)}, 500
     else:
         return {"error": "Falha ao conectar com o banco de dados!"}, 500
+
 
 def delete_student_controller(current_user_id, user_id):
     connection = db_connection()
