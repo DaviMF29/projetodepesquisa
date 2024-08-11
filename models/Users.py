@@ -78,6 +78,13 @@ class User:
                     "id": user[0],
                     "name": user[1],
                     "email": user[2],
+                    "birth": user[4],
+                    "gender": user[5],
+                    "institution": user[6],
+                    "state": user[7],
+                    "city": user[8],
+                    "formation": user[9],
+                    "registration": user[10]
                 }
             else:
                 return None
