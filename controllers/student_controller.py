@@ -65,18 +65,20 @@ def get_student_controller():
     else:
         return {"message": "Falha ao conectar com o banco de dados!"}, 500
 
-def update_student_controller(user_id, field, value):
+def update_student_controller(user_id, data):
     connection = db_connection()
     if connection:
-        verify_id_exists(connection,user_id,'student')
+        verify_id_exists(connection, user_id, 'student')
         try:
-            Student.update_student_service(connection, user_id, field, value)
+            for field, value in data.items():
+                Student.update_student_service(connection, user_id, field, value)
             connection.close()
             return {"message": 'Atualização feita com sucesso!'}, 200
         except Exception as e:
             return {"error": str(e)}, 500
     else:
         return {"error": "Falha ao conectar com o banco de dados!"}, 500
+
 
 def delete_student_controller(current_user_id, user_id):
     connection = db_connection()

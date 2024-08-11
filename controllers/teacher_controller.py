@@ -56,12 +56,13 @@ def get_teacher_controller():
     else:
         return {"message": "Falha ao conectar com o banco de dados!"}, 500
 
-def update_teacher_controller(user_id, field, value):
+def update_teacher_controller(user_id, data):
     connection = db_connection()
     if connection:
-        verify_id_exists(connection,user_id,'teacher')
+        verify_id_exists(connection, user_id, 'teacher')
         try:
-            Teacher.update_teacher_service(connection, user_id, field, value)
+            for field, value in data.items():
+                Teacher.update_teacher_service(connection, user_id, field, value)
             connection.close()
             return {"message": 'Atualização feita com sucesso!'}, 200
         except Exception as e:
