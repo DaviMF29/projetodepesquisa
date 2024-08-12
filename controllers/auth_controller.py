@@ -23,15 +23,12 @@ def login_controller(data):
         if not email or not password:
             return {"message": "Email or password is missing"}, 400
 
-        
-        
         user = Student.get_student_by_email_service(connection, email)
         user_type = 'student'
 
         if not user:
             user = Teacher.get_teacher_by_email_service(connection, email)
             user_type = 'teacher'
-
         if user and bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
             access_token = create_access_token(identity={'id': str(user['id']), 'type': user_type})
             return {"access_token": access_token}, 200
@@ -39,6 +36,7 @@ def login_controller(data):
         return {"message": "Invalid email or password"}, 401
 
     except Exception as e:
+        print(f"Error in login_controller: {e}")
         return {"message": str(e)}, 500
 
     finally:

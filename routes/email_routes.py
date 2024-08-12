@@ -43,12 +43,15 @@ def forgetPassword():
 
         link = f'http://localhost:3000/{userIdCrip}'
         subject = 'Recuperação de senha'
-        recipient = "davi.almeida@aluno.uepb.edu.br"
+
+
+        recipient = User.get_user_by_id_service(connection, user_id, 'aluno'
+                                                if user_type == 'student' else 'professor')['email']
 
         if not isinstance(recipient, str):
             raise ValueError("Email inválido")
         
-        body = f"Olá, você solicitou a recuperação de senha. Para redefinir sua senha, clique no link: {link}"
+        body = open('templates/forget_password.html').read().format(link)
         
         sendEmail(subject, recipient, body)
 
