@@ -7,24 +7,14 @@ from flask_jwt_extended import get_jwt_identity
 
 question_app = Blueprint("question_app", __name__)
 
-@question_app.route("/api/question", methods=['POST'])
+@question_app.route("/api/question", methods=['GET'])
 @jwt_required()
-def create_question_route():
-    data = request.get_json()
-    response, status_code = create_questions_controller(data)
-    return jsonify(response), status_code
+def get_questions_from_group_routes():
+    conteudo = request.args.get('conteudo')
+    skill = request.args.get('skill')
 
+    if not conteudo or not skill:
+        return jsonify({"error": "Parâmetros 'conteudo' e 'skill' são obrigatórios."}), 400
 
-@question_app.route("/api/question/<groupId>", methods=['GET'])
-@jwt_required()
-def get_questions_from_group_routes(groupId):
-    data = request.get_json()
-    response, status_code = get_questions_from_teacher(groupId, data)
-    return jsonify(response), status_code
-
-@question_app.route("/api/question/<groupId>", methods=["DELETE"])
-@jwt_required()
-def delete_questions_from_group_routes(groupId):
-    data = request.get_json()
-    response, status_code = delete_questions_from_group_controller(data, groupId)
+    response, status_code = get_questions_from_teacher(conteudo, skill)
     return jsonify(response), status_code
