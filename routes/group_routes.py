@@ -62,9 +62,9 @@ def get_groups_from_teacher_route():
 
 @group_app.route("/api/group/<grupoId>", methods=["PATCH"])
 @jwt_required()
-def update_student_group_route(groupId):
+def update_student_group_route(grupoId):
     data = request.get_json()
     teacher_id = get_jwt_identity()
-    response, status_code = update_group_controller(teacher_id,groupId,data)
+    response, status_code = update_group_controller(teacher_id,grupoId,data)
     return jsonify(response), status_code
 
