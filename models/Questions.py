@@ -59,7 +59,7 @@ class Questions:
                 "b)": row[6],
                 "c)": row[7] if len(row) > 7 else None,
                 "d)": row[8] if len(row) > 8 else None,
-                "RESPOSTA:": row[9]
+                "RESPOSTA:": row[7]
             }
             for row in results
         ]
