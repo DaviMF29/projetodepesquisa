@@ -73,12 +73,6 @@ def delete_users(user_id):
     response, status_code = delete_teacher_controller(current_user_id,user_id)
     return jsonify(response), status_code
 
-@teacher_app.route('/api/teacher', methods=['GET'])
-def get_users_route():
-    response = get_teacher_controller()
-    return jsonify(response)
-
-
 @teacher_app.route('/alterarNome', methods=['POST'])
 def rename_table():
     data = request.get_json()
@@ -105,6 +99,14 @@ def get_all_teachers():
     return jsonify(teachers)
 
 @teacher_app.route('/api/teacher/<user_id>', methods=['GET'])
-def get_user_route(user_id):
+def get_teacher_route(user_id):
     response = get_teacher_by_id_controller(user_id)
     return jsonify(response)
+
+@teacher_app.route('/api/teacher/email/<email>', methods=['GET'])
+def get_teacher_by_email(email):
+    user = get_teacher_by_email_controller(email)
+    if user:
+        return jsonify(user)
+    else:
+        return jsonify({"message": "Usuário não encontrado!"}), 404

@@ -103,3 +103,11 @@ def rename_table():
 def get_user_route(user_id):
     response = get_student_by_id_controller(user_id)
     return jsonify(response)
+
+@user_app.route('/api/student/email/<email>', methods=['GET'])
+def get_user_by_id_email(email):
+    user = get_student_by_email_controller(email)
+    if user:
+        return jsonify(user)
+    else:
+        return jsonify({"message": "Usuário não encontrado!"}), 404
