@@ -108,3 +108,12 @@ def get_student_by_id_controller(user_id):
         return user
     else:
         return {"message": "Falha ao conectar com o banco de dados!"}, 500
+    
+def get_student_by_email_controller(email):
+    connection = db_connection()
+    if connection:
+        user = Student.get_student_by_email_service(connection, email)
+        connection.close()
+        return user
+    else:
+        return {"message": "Falha ao conectar com o banco de dados!"}, 500
