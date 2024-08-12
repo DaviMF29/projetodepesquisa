@@ -136,7 +136,7 @@ class Group:
             return None
         
 
-    def update_group_service(self, connection,field,value,group_id):
+    def update_group_service(connection,field,value,group_id):
         try:
             with connection.cursor() as cursor:
                 sql = f"UPDATE group_table SET {field} = %s WHERE id_grupo = %s" 
