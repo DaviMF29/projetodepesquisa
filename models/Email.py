@@ -8,7 +8,7 @@ load_dotenv()
 def sendEmail(subject, recipient, body):
     email_user = os.getenv('EMAIL_USER')
     email_password = os.getenv('EMAIL_PASSWORD')
-    print(email_user, email_password)
+    print(email_user)
 
     if not email_user or not email_password:
         raise ValueError("Email or password environment variables not set")

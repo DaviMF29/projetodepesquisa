@@ -135,6 +135,7 @@ class User:
                     "id": user[0],
                     "name": user[1],
                     "email": user[2],
+                    "password": user[3],
                     "birth": user[4],
                     "gender": user[5],
                     "institution": user[6],
