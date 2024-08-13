@@ -3,28 +3,22 @@ from flask import request, jsonify, Blueprint
 from controllers.questions_controller import *
 
 from flask_jwt_extended import jwt_required
-from flask_jwt_extended import get_jwt_identity
 
 question_app = Blueprint("question_app", __name__)
 
-@question_app.route("/api/question", methods=['POST'])
-@jwt_required()
-def create_question_route():
-    data = request.get_json()
-    response, status_code = create_questions_controller(data)
-    return jsonify(response), status_code
+@question_app.route("/api/question", methods=['GET'])
+def get_questions_from_group_routes():
+    conteudo = request.args.get('conteudo')
+    skill = request.args.get('skill')
 
+    if not conteudo or not skill:
+        return jsonify({"error": "Parâmetros 'conteudo' e 'skill' são obrigatórios."}), 400
 
-@question_app.route("/api/question/<groupId>", methods=['GET'])
-@jwt_required()
-def get_questions_from_group_routes(groupId):
-    data = request.get_json()
-    response, status_code = get_questions_from_teacher(groupId, data)
-    return jsonify(response), status_code
+    try:
+        conteudo = conteudo.encode('utf-8').decode('utf-8')
+        skill = skill.encode('utf-8').decode('utf-8')
+    except UnicodeEncodeError as e:
+        return jsonify({"error": f"Erro de codificação UTF-8: {str(e)}"}), 400
 
-@question_app.route("/api/question/<groupId>", methods=["DELETE"])
-@jwt_required()
-def delete_questions_from_group_routes(groupId):
-    data = request.get_json()
-    response, status_code = delete_questions_from_group_controller(data, groupId)
+    response, status_code = get_questions_from_teacher_controller(conteudo, skill)
     return jsonify(response), status_code
