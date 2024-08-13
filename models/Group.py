@@ -31,11 +31,16 @@ class Group:
         with connection.cursor() as cursor:
             query = """
                 SELECT p.nameTeacher, e.nameStudent, g.title, g.period, e.id
-                FROM group_table g
-                JOIN professor p ON g.id_teacher = p.id
-                LEFT JOIN student_group sg ON g.id_grupo = sg.id_grupo
-                LEFT JOIN aluno e ON sg.id_aluno = e.id
-                WHERE g.id_grupo = %s
+                FROM 
+                    group_table g
+                JOIN 
+                    p ON g.id_teacher = p.id
+                LEFT JOIN 
+                    student_group sg ON g.id_grupo = sg.id_grupo
+                LEFT JOIN 
+                    aluno e ON sg.id_aluno = e.id
+                WHERE 
+                    g.id_grupo = %s
             """
             cursor.execute(query, (id_group,))
             results = cursor.fetchall()
@@ -64,6 +69,41 @@ class Group:
             ]
 
         return teacher, students
+
+
+    @staticmethod
+    def get_students_from_group(connection, id_group):
+        query = """
+                SELECT e.id, e.registrationStudent, e.nameStudent
+                FROM 
+                    group_table g
+                JOIN 
+                    professor p ON g.id_teacher = p.id
+                JOIN 
+                    student_group sg ON g.id_grupo = sg.id_grupo
+                JOIN 
+                    aluno e ON sg.id_aluno = e.id
+                WHERE g.id_grupo = %s
+                LIMIT 4;
+            """
+        
+        with connection.cursor() as cursor:
+            cursor.execute(query, (id_group,))
+            results = cursor.fetchall()
+
+        if not results:
+            return {"message": "Nenhum usuário encontrado"}, 404
+
+        students = [
+            {
+                "ID": row[0],
+                "Matricula": row[1] or "N/A",  # Mostra "N/A" se a matrícula estiver ausente
+                "nameStudent": row[2]
+            }
+            for row in results
+        ]
+
+        return students
 
 
     @staticmethod

@@ -36,6 +36,11 @@ def get_students_from_group_route(id_group):
     response, status_code = get_students_from_group_controller(id_group)
     return jsonify(response), status_code
 
+@group_app.route("/api/student/group/<id_group>", methods=["GET"])
+@jwt_required()
+def get_students_group_routes(id_group):
+    response, status_code = get_students_geral(id_group)
+    return jsonify(response), status_code
 
 @group_app.route("/api/group/student/<groupId>", methods=["DELETE"])
 @jwt_required()
