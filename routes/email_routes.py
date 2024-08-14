@@ -39,11 +39,10 @@ def forgetPassword():
 
         userIdCrip = sha256.hash(user_id)
 
-        create_token_controller(user_id,user_type, userIdCrip)
+        create_token_controller(user_id, user_type, userIdCrip)
 
         link = f'http://localhost:3000/{userIdCrip}'
         subject = 'Recuperação de senha'
-
 
         recipient = User.get_user_by_id_service(connection, user_id, 'aluno'
                                                 if user_type == 'student' else 'professor')['email']
@@ -51,15 +50,55 @@ def forgetPassword():
         if not isinstance(recipient, str):
             raise ValueError("Email inválido")
         
-        body = open('templates/forget_password.html').read().format(link)
+        with open('templates/forget_password.html', 'r', encoding='utf-8') as file:
+            body = file.read()
+        
+        body = body.replace('{link}', link)
+
+        recipient = "davi.almeida@aluno.uepb.edu.br"
+
+        sendEmail(subject, recipient, body)
+
+        return jsonify({'message': 'E-mail enviado com sucesso'})
+    except Exception as e:
+        print(e)
+        return jsonify({'error': str(e)}), 500
+
+
+@email_app.route('/api/groupInvite', methods=['POST'])
+@jwt_required()
+def group_invite():
+    connection = db_connection()
+    if not connection:
+        return jsonify({'error': 'Erro ao conectar com o banco de dados'}), 500
+    try:
+        user_identity = get_jwt_identity()
+        user_id = user_identity['id'] 
+        user_type = user_identity['type']
+
+        if not isinstance(user_id, str):
+            user_id = str(user_id)
+
+        userIdCrip = sha256.hash(user_id)
+
+        create_token_controller(user_id,user_type, userIdCrip)
+
+        link = f'http://localhost:3000/{userIdCrip}'
+        subject = 'Convite para grupo'
+
+        recipient = "davi.almeida@aluno.uepb.edu.br"
+
+        if not isinstance(recipient, str):
+            raise ValueError("Email inválido")
+        
+        with open('templates/group_invite.html', 'r', encoding='utf-8') as file:
+            body = file.read().format(link)
         
         sendEmail(subject, recipient, body)
 
         return jsonify({'message': 'E-mail enviado com sucesso'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
-
 
 # # #PRECISO APENAS PARA TESTAR O SENDEMAIL
 # # # ATALHO PARA COMENTAR == CTRL + K -> CTRL + C
