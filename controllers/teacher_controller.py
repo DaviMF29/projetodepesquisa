@@ -58,7 +58,8 @@ def update_teacher_controller(user_id, data):
     connection = db_connection()
     if connection:
         verify_id_exists(connection, user_id, 'teacher')
-        verify_email_teacher_registered(connection, data.get('emailTeacher').lower())
+        if 'emailTeacher' in data:
+            verify_email_teacher_registered(connection, data.get('emailTeacher').lower())
         try:
             for field, value in data.items():
                 Teacher.update_teacher_service(connection, user_id, field, value)
