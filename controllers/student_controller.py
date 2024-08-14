@@ -66,7 +66,8 @@ def update_student_controller(user_id, data):
     connection = db_connection()
     if connection:
         verify_id_exists(connection, user_id, 'student')
-        verify_email_student_registered(connection, data.get('emailStudent'))
+        if 'emailStudent' in data:
+            verify_email_student_registered(connection, data.get('emailStudent').lower())
             
         try:
             for field, value in data.items():
