@@ -86,10 +86,10 @@ def get_students_from_group_controller(id_group,num_pag):
 
     return {"Group": teacher,"Students":students}, 200
 
-def get_students_geral(id_group):
+def get_all_students_controller(id_group):
     connection = db_connection()
-    students = Group.get_students_from_group_service(connection, id_group)
-    return {"Students": students}, 200
+    teacher,students = Group.get_students_from_group_service(connection, id_group)
+    return {"Group":teacher,"Students": students}, 200
 
 def delete_group_controller(current_user_id, group_id):
     connection = db_connection()
