@@ -2,7 +2,8 @@ from bcrypt import gensalt, hashpw
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from controllers.student_controller import *
-
+from werkzeug.utils import secure_filename
+from db.firebase import delete_file_from_upload, handle_image_upload
 from models.Student import Student
 
 user_app = Blueprint('user_app', __name__)
@@ -111,3 +112,25 @@ def get_user_by_id_email(email):
         return jsonify(user)
     else:
         return jsonify({"message": "Usuário não encontrado!"}), 404
+    
+@user_app.route('/api/student/upload_image', methods=['PATCH'])
+@jwt_required()
+def upload_image_student():
+    if 'image' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+
+    file = request.files['image']
+
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+    
+    try:
+        file_path = handle_image_upload(file)
+        student_id = get_jwt_identity()["id"]
+        destination_blob_name = f"students/{student_id}/profile_image.jpg"
+        image_url = upload_image_to_firebase(file_path,destination_blob_name)
+        upload_image_student_controller(image_url, student_id)
+        delete_file_from_upload(file_name=file.filename)
+        return jsonify({"message": "File uploaded successfully", "file_url": image_url}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

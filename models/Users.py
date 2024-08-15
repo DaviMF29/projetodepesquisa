@@ -1,7 +1,7 @@
 from aifc import Error
 
 class User:
-    def __init__(self, name, email, password, birth, gender=None, institution=None, formation=None, state=None, city=None, registration=None):
+    def __init__(self, name, email, password, birth, gender=None, institution=None, formation=None, state=None, city=None, registration=None, image = None):
         self.id = None
         self.name = name
         self.email = email
@@ -13,6 +13,7 @@ class User:
         self.city = city
         self.formation = formation
         self.registration = registration
+        self.image = image
 
 
     def create_user_service(self, connection, user_type, user_data):
@@ -195,5 +196,17 @@ class User:
                     return email
                 else:
                     return None
+        finally:
+            cursor.close()
+
+    def upload_image_service(connection, user_id, table_name, fieldName,imagePath):
+        cursor = connection.cursor()
+        try:
+            cursor.execute(f"UPDATE {table_name} SET {fieldName} = %s WHERE id = %s", (imagePath, user_id))
+            connection.commit()
+            return True
+        except Exception as e:
+            print(f"Erro ao atualizar foto: {e}")
+            return False
         finally:
             cursor.close()
