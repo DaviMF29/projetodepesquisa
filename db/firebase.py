@@ -1,11 +1,18 @@
 import os
+from dotenv import load_dotenv
 import firebase_admin
 from firebase_admin import credentials, storage
 from werkzeug.utils import secure_filename
+load_dotenv()
+
+storage_bucket_name = os.getenv("FIREBASE_STORAGE_BUCKET")
+
+if not storage_bucket_name:
+    raise ValueError("FIREBASE_STORAGE_BUCKET environment variable is not set.")
 
 cred = credentials.Certificate('quokka-credentials.json') #alterar
 firebase_admin.initialize_app(cred, {
-    'storageBucket': 'quokka-3fca5.appspot.com'
+    'storageBucket': storage_bucket_name
 })
 
 def upload_image_to_firebase(image_path, destination_blob_name):
