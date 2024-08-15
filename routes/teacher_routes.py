@@ -110,3 +110,25 @@ def get_teacher_by_email(email):
         return jsonify(user)
     else:
         return jsonify({"message": "Usuário não encontrado!"}), 404
+    
+@teacher_app.route('/api/teacher/upload_image', methods=['PATCH'])
+@jwt_required()
+def upload_image_teacher():
+    if 'image' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+
+    file = request.files['image']
+
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    try:
+        file_path = handle_image_upload(file)
+        teacher_id = get_jwt_identity()["id"]
+        destination_blob_name = f"teachers/{teacher_id}/profile_image.jpg"
+        image_url = upload_image_to_firebase(file_path,destination_blob_name)
+        upload_image_teacher_controller(image_url, teacher_id)
+        delete_file_from_upload(file_name=file.filename)
+        return jsonify({"message": "File uploaded successfully", "file_url": image_url}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

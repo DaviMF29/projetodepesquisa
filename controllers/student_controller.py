@@ -1,7 +1,9 @@
 from flask import jsonify
 from flask_jwt_extended import create_access_token
+from db.firebase import upload_image_to_firebase
 from models.Student import Student
 from db.bd_mysql import db_connection
+from werkzeug.utils import secure_filename
 
 from middleware.global_middleware import (
     verify_email_registered,
@@ -116,3 +118,16 @@ def get_student_by_email_controller(email):
         return user
     else:
         return {"message": "Falha ao conectar com o banco de dados!"}, 500
+    
+def upload_image_student_controller(image_url, student_id):
+    connection = db_connection()
+    if connection:
+        try:
+            sanitized_student_id = secure_filename(student_id)
+            Student.upload_image_service(connection, sanitized_student_id, image_url)
+            return image_url
+        except Exception as e:
+            raise Exception(f"Error uploading student's image: {str(e)}")
+    else:
+        raise Exception("Database connection failed.")
+

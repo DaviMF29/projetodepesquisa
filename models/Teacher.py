@@ -48,3 +48,7 @@ class Teacher(User):
     @staticmethod
     def get_email_by_id(connection, user_id):
         return User.get_email_by_id(connection, user_id, 'professor')
+    
+    def upload_image_service(connection, user_id, imagePath):
+        return User.upload_image_service(connection, user_id, 'professor', 'photoTeacher', imagePath)
+

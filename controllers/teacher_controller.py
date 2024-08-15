@@ -1,6 +1,7 @@
 from flask_jwt_extended import create_access_token
 from models.Teacher import Teacher
 from db.bd_mysql import db_connection
+from db.firebase import *
 
 from middleware.global_middleware import (
     verify_email_teacher_registered,
@@ -110,3 +111,16 @@ def get_teacher_by_id_controller(user_id):
         return user
     else:
         return {"message": "Falha ao conectar com o banco de dados!"}, 500
+
+def upload_image_teacher_controller(image_url, teacher_id):
+    connection = db_connection()
+    if connection:
+        try:
+            sanitized_teacher_id = secure_filename(teacher_id)
+                        
+            Teacher.upload_image_service(connection, sanitized_teacher_id, image_url)
+            return image_url
+        except Exception as e:
+            raise Exception(f"Error uploading student's image: {str(e)}")
+    else:
+        raise Exception("Database connection failed.")
