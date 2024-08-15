@@ -13,7 +13,7 @@ from routes.questions_routes import question_app
 
 app = Flask(__name__)
 
-# Configuração do CORS para permitir todas as origens
+# Configuração do CORS
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Registro das Blueprints
