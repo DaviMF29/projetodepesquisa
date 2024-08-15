@@ -3,7 +3,7 @@ import firebase_admin
 from firebase_admin import credentials, storage
 from werkzeug.utils import secure_filename
 
-cred = credentials.Certificate('db/quokka-credentials.json') #alterar
+cred = credentials.Certificate('quokka-credentials.json') #alterar
 firebase_admin.initialize_app(cred, {
     'storageBucket': 'quokka-3fca5.appspot.com'
 })
