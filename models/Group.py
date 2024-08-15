@@ -153,6 +153,16 @@ class Group:
             print(f"Error updating group: {e}")
             return {"message": "Erro ao atualizar o grupo"}, 500
 
+    def upload_image_service(connection, group_id, image_url):
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("UPDATE group_table SET photoGroup = %s WHERE id_grupo = %s", (image_url, group_id))
+                connection.commit()
+                return {"message": "Imagem enviada com sucesso"}, 200
+
+        except Exception as e:
+            print(f"Error uploading image: {e}")
+            return {"message": "Erro ao enviar a imagem"}, 500
 
 
 

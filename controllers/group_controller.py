@@ -135,3 +135,17 @@ def update_group_controller(teacher_id, group_id, data):
         return {"error": str(e)}, 500
     finally:
         connection.close()
+
+def upload_image_group_controller(image_url, group_id):
+    connection = db_connection()
+    if connection:
+        try:
+            sanitized_group_id = secure_filename(group_id)
+                        
+            Group.upload_image_service(connection, sanitized_group_id, image_url)
+            return image_url
+        except Exception as e:
+            raise Exception(f"Error uploading student's image: {str(e)}")
+    else:
+        raise Exception("Database connection failed.")
+
