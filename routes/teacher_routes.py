@@ -1,5 +1,5 @@
 from bcrypt import gensalt, hashpw
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, current_app, request, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from controllers.teacher_controller import *
 
@@ -113,22 +113,28 @@ def get_teacher_by_email(email):
     
 @teacher_app.route('/api/teacher/upload_image', methods=['PATCH'])
 @jwt_required()
-def upload_image_teacher():
-    if 'image' not in request.files:
-        return jsonify({"error": "No file part"}), 400
-
-    file = request.files['image']
-
-    if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
-
+def upload_image_teacher_routes():
     try:
-        file_path = handle_image_upload(file)
+        if 'image' not in request.files:
+            return jsonify({"error": "No file part"}), 400
+
+        file = request.files['image']
+
+        if file.filename == '':
+            return jsonify({"error": "No selected file"}), 400
+
+        file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], file.filename)
+        file.save(file_path)
+        
         teacher_id = get_jwt_identity()["id"]
         destination_blob_name = f"teachers/{teacher_id}/profile_image.jpg"
-        image_url = upload_image_to_firebase(file_path,destination_blob_name)
+        image_url = upload_image_to_firebase(file_path, destination_blob_name)
+        
         upload_image_teacher_controller(image_url, teacher_id)
+        
         delete_file_from_upload(file_name=file.filename)
+        
         return jsonify({"message": "File uploaded successfully", "file_url": image_url}), 200
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
