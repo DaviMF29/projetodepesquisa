@@ -39,8 +39,11 @@ def home():
     return "API de cadastro do screen programming"
 
 
-with open('quokka-credentials.json') as credentials_file:
-    credentials = json.load(credentials_file)
+credentials_path = os.getenv("FIREBASE_CREDENTIALS_PATH")
+
+# Carregue as credenciais do arquivo JSON
+with open(credentials_path) as f:
+    firebase_credentials = json.load(f)
 
 if __name__ == "__main__":
     print("Servidor rodando")
