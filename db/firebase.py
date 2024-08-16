@@ -1,4 +1,3 @@
-import json
 import os
 from dotenv import load_dotenv
 import firebase_admin
@@ -7,13 +6,11 @@ from werkzeug.utils import secure_filename
 load_dotenv()
 
 storage_bucket_name = os.getenv("FIREBASE_STORAGE_BUCKET")
-credentials_json = os.getenv("FIREBASE_CREDENTIALS_JSON")
-if credentials_json:
-    cred_dict = json.loads(credentials_json)
-    cred = credentials.Certificate(cred_dict)
-else:
-    raise ValueError("FIREBASE_CREDENTIALS_JSON environment variable not set")
 
+if not storage_bucket_name:
+    raise ValueError("FIREBASE_STORAGE_BUCKET environment variable is not set.")
+
+cred = credentials.Certificate('quokka-credentials.json') #alterar
 firebase_admin.initialize_app(cred, {
     'storageBucket': storage_bucket_name
 })
