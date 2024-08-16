@@ -1,6 +1,4 @@
-from flask import jsonify
 from flask_jwt_extended import create_access_token
-from db.firebase import upload_image_to_firebase
 from models.Student import Student
 from db.bd_mysql import db_connection
 from werkzeug.utils import secure_filename

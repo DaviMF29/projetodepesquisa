@@ -2,8 +2,7 @@ from bcrypt import gensalt, hashpw
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from controllers.student_controller import *
-from werkzeug.utils import secure_filename
-from db.firebase import delete_file_from_upload, handle_image_upload
+from db.firebase import delete_file_from_upload, handle_image_upload, upload_image_to_firebase
 from models.Student import Student
 
 user_app = Blueprint('user_app', __name__)
