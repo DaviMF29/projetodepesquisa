@@ -10,7 +10,7 @@ storage_bucket_name = os.getenv("FIREBASE_STORAGE_BUCKET")
 if not storage_bucket_name:
     raise ValueError("FIREBASE_STORAGE_BUCKET environment variable is not set.")
 
-cred = credentials.Certificate('quokka-credentials.json') #alterar
+cred = credentials.Certificate('screen-programing.json') #alterar
 firebase_admin.initialize_app(cred, {
     'storageBucket': storage_bucket_name
 })
