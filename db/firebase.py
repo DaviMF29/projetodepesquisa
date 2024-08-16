@@ -15,39 +15,28 @@ firebase_admin.initialize_app(cred, {
     'storageBucket': storage_bucket_name
 })
 
-def upload_image_to_firebase(image_path, destination_blob_name, max_size_mb=16, allowed_extensions=None):
+def upload_image_to_firebase(file_stream, destination_blob_name, max_size_mb=16, allowed_extensions=None):
     if allowed_extensions is None:
         allowed_extensions = ['jpg', 'jpeg', 'png', 'gif']
-        
+    
     try:
-        if not os.path.isfile(image_path):
-            raise FileNotFoundError(f"File '{image_path}' does not exist.")
-        
-        file_size_mb = os.path.getsize(image_path) / (1024 * 1024)
+        file_size_mb = len(file_stream.getvalue()) / (1024 * 1024)
         if file_size_mb > max_size_mb:
             raise ValueError(f"File size exceeds the maximum allowed size of {max_size_mb} MB.")
         
-        file_extension = os.path.splitext(image_path)[1].lower().replace('.', '')
-        if file_extension not in allowed_extensions:
-            raise ValueError(f"Unsupported file type. Allowed types are: {', '.join(allowed_extensions)}.")
+        file_stream.seek(0)
         
         bucket = storage.bucket()
         blob = bucket.blob(destination_blob_name)
-        blob.upload_from_filename(image_path)
+        blob.upload_from_file(file_stream, content_type='image/jpeg')
         blob.make_public()
+        
         return blob.public_url
     
-    except FileNotFoundError as fnf_error:
-        raise Exception(f"File error: {str(fnf_error)}")
-    except ValueError as val_error:
-        raise Exception(f"Validation error: {str(val_error)}")
     except GoogleAPIError as api_error:
         raise Exception(f"Google API error: {str(api_error)}")
     except Exception as e:
         raise Exception(f"Error uploading image to Firebase: {str(e)}")
-
-
-
 
 
 def handle_image_upload(file,upload_folder='uploads'):
