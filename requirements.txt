@@ -5,3 +5,5 @@ flask_jwt_extended
 bcrypt
 flask_cors
 passlib
+firebase_admin
+werkzeug
