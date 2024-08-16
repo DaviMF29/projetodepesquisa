@@ -54,8 +54,6 @@ def add_user_router():
 
     response, access_token, status_code = result
     return jsonify(response), status_code, access_token
- 
-
 
 @user_app.route("/api/student", methods=['PATCH'])
 @jwt_required()
