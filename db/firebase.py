@@ -7,9 +7,12 @@ from werkzeug.utils import secure_filename
 load_dotenv()
 
 storage_bucket_name = os.getenv("FIREBASE_STORAGE_BUCKET")
-credentialsfirebase = os.getenv("FIREBASE_CREDENTIALS_PATH")
-print(credentialsfirebase)
-cred = credentials.Certificate(credentialsfirebase)
+credentials_json = os.getenv("FIREBASE_CREDENTIALS_JSON")
+if credentials_json:
+    cred_dict = json.loads(credentials_json)
+    cred = credentials.Certificate(cred_dict)
+else:
+    raise ValueError("FIREBASE_CREDENTIALS_JSON environment variable not set")
 
 firebase_admin.initialize_app(cred, {
     'storageBucket': storage_bucket_name
