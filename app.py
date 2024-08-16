@@ -2,7 +2,6 @@ from flask import Flask
 from flask_jwt_extended import JWTManager
 import os
 from flask_cors import CORS
-import json
 
 from routes.student_routes import user_app
 from routes.teacher_routes import teacher_app
@@ -37,13 +36,6 @@ jwt = JWTManager(app)
 @app.route('/')
 def home():
     return "API de cadastro do screen programming"
-
-
-credentials_path = os.getenv("FIREBASE_CREDENTIALS_PATH")
-
-# Carregue as credenciais do arquivo JSON
-with open(credentials_path) as f:
-    firebase_credentials = json.load(f)
 
 if __name__ == "__main__":
     print("Servidor rodando")

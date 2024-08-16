@@ -8,7 +8,7 @@ load_dotenv()
 
 storage_bucket_name = os.getenv("FIREBASE_STORAGE_BUCKET")
 credentialsfirebase = os.getenv("FIREBASE_CREDENTIALS_PATH")
-
+print(credentialsfirebase)
 cred = credentials.Certificate(credentialsfirebase)
 
 firebase_admin.initialize_app(cred, {
