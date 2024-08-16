@@ -42,9 +42,6 @@ def home():
 with open('quokka-credentials.json') as credentials_file:
     credentials = json.load(credentials_file)
 
-
 if __name__ == "__main__":
     print("Servidor rodando")
     app.run(debug=True)
-
-    
