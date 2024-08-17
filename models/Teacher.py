@@ -2,8 +2,8 @@ from models.Users import User
 
 
 class Teacher(User):
-    def __init__(self, name, email, password, birth, gender=None, institution=None, certificate=None, state=None, city=None, registration = None):
-        super().__init__(name, email, password, birth, gender, institution, certificate, state, city, registration)
+    def __init__(self, name, email, password, birth, gender=None, institution=None, certificate=None, state=None, city=None, registration = None, image = None):
+        super().__init__(name, email, password, birth, gender, institution, certificate, state, city, registration, image)
         
     def to_db_format(self):
         return {
@@ -17,6 +17,7 @@ class Teacher(User):
             'cityTeacher': self.city,
             'formationTeacher': self.formation,
             'registrationTeacher': self.registration,
+            'photoTeacher': self.image
         }
 
     def create_teacher_service(self, connection):
