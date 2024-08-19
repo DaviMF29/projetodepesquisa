@@ -85,7 +85,8 @@ class User:
                     "state": user[7],
                     "city": user[8],
                     "formation": user[9],
-                    "registration": user[10]
+                    "registration": user[10],
+                    "image":user[11]
                 }
             else:
                 return None
