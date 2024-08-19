@@ -26,17 +26,14 @@ class Teacher(User):
     def update_teacher_service(connection, user_id, field, value):
         User.update_user_service(connection, 'professor', user_id, field, value)
 
-
     @staticmethod
     def get_all_teacher_service(connection):
         return User.get_all_user_service(connection, 'professor')
     
-
     @staticmethod
     def delete_teacher_service(connection, user_id):
         return User.delete_user_service(connection, user_id, 'professor')
     
-
     @staticmethod
     def get_teacher_by_email_service(connection, email):
         return User.get_user_by_email_service(connection, email, 'professor', 'emailTeacher')
@@ -52,3 +49,5 @@ class Teacher(User):
     def upload_image_service(connection, user_id, imagePath):
         return User.upload_image_service(connection, user_id, 'professor', 'photoTeacher', imagePath)
 
+    def get_groups_from_teacher_service(connection, user_id):
+        return User.get_groups_from_user_service(connection, user_id, 'professor')

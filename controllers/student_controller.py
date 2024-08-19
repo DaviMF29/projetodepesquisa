@@ -129,3 +129,12 @@ def upload_image_student_controller(image_url, student_id):
     else:
         raise Exception("Database connection failed.")
 
+def get_groups_from_student_controller(user_id):
+    connection = db_connection()
+    if connection:
+        verify_id_exists(connection,user_id,'student')
+        groups = Student.get_groups_from_student_service(connection, user_id)
+        connection.close()
+        return groups
+    else:
+        return {"message": "Falha ao conectar com o banco de dados!"}, 500

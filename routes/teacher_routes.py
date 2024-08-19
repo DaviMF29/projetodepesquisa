@@ -142,3 +142,10 @@ def upload_image_teacher_route():
         return jsonify({"error": str(val_error)}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@teacher_app.route('/api/teacher/groups', methods=['GET'])
+@jwt_required()
+def get_groups_from_teacher_route():
+    user_id = get_jwt_identity()["id"]
+    response = get_groups_from_teacher_controller(user_id)
+    return jsonify(response)

@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from db.bd_mysql import db_connection
+from models.Teacher import Teacher
 from models.Email import sendEmail
 from passlib.hash import pbkdf2_sha256 as sha256
 from controllers.token_controller import create_token_controller
@@ -75,7 +76,9 @@ def group_invite():
         user_identity = get_jwt_identity()
         user_id = user_identity['id'] 
         user_type = user_identity['type']
-
+        data = request.get_json()
+        groupName = data['groupName']
+        recipient = data['recipient']
         if not isinstance(user_id, str):
             user_id = str(user_id)
 
@@ -86,13 +89,13 @@ def group_invite():
         link = f'http://localhost:3000/{userIdCrip}'
         subject = 'Convite para grupo'
 
-        recipient = "davi.almeida@aluno.uepb.edu.br"
-
         if not isinstance(recipient, str):
             raise ValueError("Email inválido")
         
+        teacherName = Teacher.get_teacher_by_id_service(connection, user_id)['name']
         with open('templates/group_invite.html', 'r', encoding='utf-8') as file:
-            body = file.read().format(link)
+            html = file.read()
+            body = html.format(group = groupName,teacher = teacherName)
         
         sendEmail(subject, recipient, body)
 

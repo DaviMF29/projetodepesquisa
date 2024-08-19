@@ -210,3 +210,29 @@ class User:
             return False
         finally:
             cursor.close()
+
+    def get_groups_from_user_service(connection, user_id, user_type):
+        cursor = connection.cursor()
+        try:
+            if user_type == 'aluno':
+                cursor.execute("SELECT id_aluno, id_group FROM student_group WHERE id_aluno = %s", (user_id,))
+                results = cursor.fetchall()
+                return [{"id_aluno": result[0], "id_group": result[1]} for result in results]
+            else:
+                cursor.execute("SELECT id_grupo, id_teacher, title, period, photoGroup FROM group_table WHERE id_teacher = %s", (user_id,))
+                results = cursor.fetchall()
+                return [
+                    {
+                        "id_group": result[0],
+                        "id_teacher": result[1],
+                        "title": result[2],
+                        "period": result[3],
+                        "photoGroup": result[4]
+                    } for result in results
+                ]
+        except Exception as e:
+            print(f"Erro ao buscar grupos: {e}")
+            return None  
+        finally:
+            cursor.close()
+

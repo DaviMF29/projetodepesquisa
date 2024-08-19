@@ -33,6 +33,8 @@ class Student(User):
     def update_student_service(connection, user_id, field, value):
         User.update_user_service(connection, 'aluno', user_id, field, value)
 
+    def get_groups_from_student_service(connection, user_id):
+        return User.get_groups_from_user_service(connection, user_id, 'aluno')
 
     @staticmethod
     def get_all_student_service(connection):
