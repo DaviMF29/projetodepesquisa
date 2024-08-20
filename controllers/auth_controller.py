@@ -22,10 +22,10 @@ def login_controller(data):
 
         if not email or not password:
             return {"message": "Email or password is missing"}, 400
-
-        user = Student.get_student_by_email_service(connection, email)
-        user_type = 'student'
-
+        if email.contains('aluno'):
+            user = Student.get_student_by_email_service(connection, email)
+            user_type = 'student'
+        
         if not user:
             user = Teacher.get_teacher_by_email_service(connection, email)
             user_type = 'teacher'
