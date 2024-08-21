@@ -217,13 +217,18 @@ class User:
         try:
             if user_type == 'aluno':
                 cursor.execute("""
-                    SELECT s.id_grupo, g.id_teacher
-                    FROM student_group s
-                    JOIN group_table g ON g.id_grupo = s.id_grupo
-                    WHERE s.id_aluno = %s
-                """, (user_id,))
+                    SELECT s.id_grupo, g.id_teacher, g.title,g.period, t.nameTeacher
+                    FROM 
+                        student_group s
+                    JOIN 
+                        group_table g ON g.id_grupo = s.id_grupo
+                    JOIN 
+                        professor t ON t.id = g.id_teacher
+                    WHERE 
+                        s.id_aluno = %s
+                    """, (user_id,))
                 results = cursor.fetchall()
-                return [{"id_group": result[0], "id_teacher":result[1]} for result in results]
+                return [{"id_group": result[0], "id_teacher":result[1], "title":result[2],"period":result[3], "teacher":result[4]} for result in results]
             else:
                 cursor.execute("SELECT id_grupo, id_teacher, title, period, photoGroup FROM group_table WHERE id_teacher = %s", (user_id,))
                 results = cursor.fetchall()
