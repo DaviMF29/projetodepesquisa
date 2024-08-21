@@ -216,9 +216,14 @@ class User:
         cursor = connection.cursor()
         try:
             if user_type == 'aluno':
-                cursor.execute("SELECT id_aluno, id_grupo FROM student_group WHERE id_aluno = %s", (user_id,))
+                cursor.execute("""
+                    SELECT s.id_grupo, g.id_teacher
+                    FROM student_group s
+                    JOIN group_table g ON g.id_grupo = s.id_grupo
+                    WHERE s.id_aluno = %s
+                """, (user_id,))
                 results = cursor.fetchall()
-                return [{"id_aluno": result[0], "id_group": result[1]} for result in results]
+                return [{"id_group": result[0], "id_teacher":result[1]} for result in results]
             else:
                 cursor.execute("SELECT id_grupo, id_teacher, title, period, photoGroup FROM group_table WHERE id_teacher = %s", (user_id,))
                 results = cursor.fetchall()

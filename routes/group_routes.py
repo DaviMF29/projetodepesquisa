@@ -69,7 +69,7 @@ def update_student_group_route(grupoId):
     return jsonify(response), status_code
 
 @group_app.route('/api/group/upload_image/<group_id>', methods=['PATCH'])
-def upload_image_teacher(group_id):
+def upload_image_group(group_id):
     if 'image' not in request.files:
         return jsonify({"error": "No file part"}), 400
 
