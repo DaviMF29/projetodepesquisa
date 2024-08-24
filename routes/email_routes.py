@@ -1,3 +1,4 @@
+import os
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from db.bd_mysql import db_connection
@@ -73,20 +74,24 @@ def group_invite():
     if not connection:
         return jsonify({'error': 'Erro ao conectar com o banco de dados'}), 500
     try:
+        secretKey = os.getenv('SECRET_KEY')
         user_identity = get_jwt_identity()
-        user_id = user_identity['id'] 
+        user_id = user_identity['id']
         user_type = user_identity['type']
         data = request.get_json()
         groupName = data['groupName']
+        groupId = data['groupId']
         recipient = data['recipient']
+        
         if not isinstance(user_id, str):
             user_id = str(user_id)
-
-        userIdCrip = sha256.hash(user_id)
-
-        create_token_controller(user_id,user_type, userIdCrip)
-
-        link = f'http://localhost:3000/{userIdCrip}'
+        
+        combinedIds = user_id + groupId
+        tokenCrip = sha256.hash(combinedIds)
+        
+        create_token_controller(user_id, user_type, secretKey, tokenCrip, groupId)
+        
+        link = f'http://localhost:3000/{tokenCrip}'
         subject = 'Convite para grupo'
 
         if not isinstance(recipient, str):
@@ -95,7 +100,7 @@ def group_invite():
         teacherName = Teacher.get_teacher_by_id_service(connection, user_id)['name']
         with open('templates/group_invite.html', 'r', encoding='utf-8') as file:
             html = file.read()
-            body = html.format(group = groupName,teacher = teacherName)
+            body = html.format(group=groupName, teacher=teacherName, link = link)
         
         sendEmail(subject, recipient, body)
 
@@ -103,5 +108,5 @@ def group_invite():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# # #PRECISO APENAS PARA TESTAR O SENDEMAIL
+
 # # # ATALHO PARA COMENTAR == CTRL + K -> CTRL + C
