@@ -247,3 +247,14 @@ class User:
         finally:
             cursor.close()
 
+    def get_id_by_email_service(connection, email, table_name, email_column):
+        cursor = connection.cursor()
+        try:
+            cursor.execute(f"SELECT id FROM {table_name} WHERE {email_column} = %s", (email,))
+            user_id = cursor.fetchone()
+            if user_id:
+                return user_id
+            else:
+                return None
+        finally:
+            cursor.close()

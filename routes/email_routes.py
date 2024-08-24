@@ -3,6 +3,7 @@ import os
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
 import jwt
+from controllers.student_controller import get_id_by_email_controller
 from db.bd_mysql import db_connection
 from middleware.global_middleware import verify_student_is_in_group
 from models.Teacher import Teacher
@@ -67,7 +68,6 @@ def forgetPassword():
 
         return jsonify({'message': 'E-mail enviado com sucesso'})
     except Exception as e:
-        print(e)
         return jsonify({'error': str(e)}), 500
 
 @email_app.route('/api/groupInvite', methods=['POST'])
@@ -77,16 +77,15 @@ def group_invite():
     if not connection:
         return jsonify({'error': 'Erro ao conectar com o banco de dados'}), 500
     try:
-        user_identity = get_jwt_identity()
-        user_id = user_identity['id']
-        user_type = user_identity['type']
         data = request.get_json()
+        teacherId = get_jwt_identity()['id']
         groupName = data['groupName']
         groupId = data['groupId']
         recipient = data['recipient']
-        
-        token, token_id, status_code = create_token_controller(user_id, user_type, groupId)
-
+        user_id = get_id_by_email_controller(recipient)
+        if not user_id:
+            return jsonify({'error': 'Usuário não encontrado'}), 404
+        token, token_id, status_code = create_token_controller(user_id, 'student', groupId)
         if status_code != 201:
             return jsonify({'error': token_id}), status_code
         
@@ -96,6 +95,8 @@ def group_invite():
         if not isinstance(recipient, str):
             raise ValueError("Email inválido")
         
+        user_id = Teacher.get_teacher_by_id_service(connection, teacherId)['id']
+
         teacherName = Teacher.get_teacher_by_id_service(connection, user_id)['name']
         with open('templates/group_invite.html', 'r', encoding='utf-8') as file:
             html = file.read()
@@ -119,7 +120,6 @@ def verify_invite():
         
         try:
             decoded_token = jwt.decode(token, secretKey, algorithms=['HS256'])
-            print("Conteúdo do token decodificado:", decoded_token)
         except jwt.ExpiredSignatureError:
             return jsonify({'error': 'Token expirado'}), 401
         except jwt.InvalidTokenError:

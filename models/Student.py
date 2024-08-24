@@ -60,3 +60,6 @@ class Student(User):
     def upload_image_service(connection, user_id, image_path):
         return User.upload_image_service(connection, user_id, 'aluno', 'photoStudent', image_path)
     
+    def get_id_by_email_service(connection, email):
+        return User.get_id_by_email_service(connection, email, 'aluno', 'emailStudent')
+    
