@@ -12,18 +12,16 @@ class Token:
     @staticmethod
     def create_token_service(connection, user_id, type, user_id_sha):
         try:
-            cursor = connection.cursor()
+            cursor = connection.cursor(buffered=True)
             cursor.execute(
                 "INSERT INTO token (user_id, type, user_id_sha) VALUES (%s,%s, %s)",
-                (user_id, type,user_id_sha)
+                (user_id, type, user_id_sha)
             )
             connection.commit()
             return cursor.lastrowid
-
         except Error as e:
             print(f"Erro ao criar token no banco de dados: {e}")
             return None
-
         finally:
             cursor.close()
 
@@ -48,14 +46,16 @@ class Token:
             cursor = connection.cursor(dictionary=True)
             cursor.execute("SELECT * FROM token WHERE user_id = %s", (user_id,))
             token = cursor.fetchone()
+            
             if token is None:
                 return None
-            return token
             
-
+            return token
         except Error as e:
             print(f"Error getting token from database: {e}")
-
+            return None
         finally:
             cursor.close()
+
+
         

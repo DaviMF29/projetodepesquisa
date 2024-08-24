@@ -1,6 +1,7 @@
 import os
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
+import jwt
 from db.bd_mysql import db_connection
 from models.Teacher import Teacher
 from models.Email import sendEmail
@@ -66,7 +67,6 @@ def forgetPassword():
         print(e)
         return jsonify({'error': str(e)}), 500
 
-
 @email_app.route('/api/groupInvite', methods=['POST'])
 @jwt_required()
 def group_invite():
@@ -74,7 +74,6 @@ def group_invite():
     if not connection:
         return jsonify({'error': 'Erro ao conectar com o banco de dados'}), 500
     try:
-        secretKey = os.getenv('SECRET_KEY')
         user_identity = get_jwt_identity()
         user_id = user_identity['id']
         user_type = user_identity['type']
@@ -83,15 +82,12 @@ def group_invite():
         groupId = data['groupId']
         recipient = data['recipient']
         
-        if not isinstance(user_id, str):
-            user_id = str(user_id)
+        token, token_id, status_code = create_token_controller(user_id, user_type, groupId)
+
+        if status_code != 201:
+            return jsonify({'error': token_id}), status_code
         
-        combinedIds = user_id + groupId
-        tokenCrip = sha256.hash(combinedIds)
-        
-        create_token_controller(user_id, user_type, secretKey, tokenCrip, groupId)
-        
-        link = f'http://localhost:3000/{tokenCrip}'
+        link = f'http://localhost:3000/{token}'
         subject = 'Convite para grupo'
 
         if not isinstance(recipient, str):
@@ -100,13 +96,15 @@ def group_invite():
         teacherName = Teacher.get_teacher_by_id_service(connection, user_id)['name']
         with open('templates/group_invite.html', 'r', encoding='utf-8') as file:
             html = file.read()
-            body = html.format(group=groupName, teacher=teacherName, link = link)
+            body = html.format(group=groupName, teacher=teacherName, link=link)
         
         sendEmail(subject, recipient, body)
-
-        return jsonify({'message': 'E-mail enviado com sucesso'})
+        
+        return jsonify({
+            'message': 'E-mail enviado com sucesso',
+            'token': token,
+        })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
 
 # # # ATALHO PARA COMENTAR == CTRL + K -> CTRL + C
