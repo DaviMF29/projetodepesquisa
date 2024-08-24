@@ -4,6 +4,7 @@ from models.Teacher import Teacher
 from db.bd_mysql import db_connection
 from models.Student import Student
 from models.Users import User
+from models.Group import Group
 
 
 @staticmethod
@@ -31,4 +32,13 @@ def verify_id_exists(connection, user_id, user_type):
         user = Teacher.get_teacher_by_id_service(connection, user_id)
     if not user:
         return abort(404, description="Usuário não encontrado")
+    return user
+
+def verify_student_is_in_group(connection, user_id, group_id):
+    user = Student.get_student_by_id_service(connection, user_id)
+    if not user:
+        return abort(404, description="Usuário não encontrado")
+    group = Group.get_student_group_by_id_service(connection, user_id)
+    if group['group_id'] != group_id:
+        return abort(404, description="Usuário não está no grupo")
     return user

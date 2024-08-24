@@ -164,6 +164,17 @@ class Group:
             print(f"Error uploading image: {e}")
             return {"message": "Erro ao enviar a imagem"}, 500
 
+    def get_student_group_by_id_service(connection, student_id, group_id):
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM student_group WHERE id_aluno = %s AND group_id = %s", (student_id, group_id))
+                group = cursor.fetchone()
+                return group
+
+        except Exception as e:
+            print(f"Error getting student group by ID: {e}")
+            return None
+
 
 
         
