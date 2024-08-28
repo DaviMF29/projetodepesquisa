@@ -83,7 +83,7 @@ def group_invite():
         groupId = data['groupId']
         recipient = data['recipient']
                 
-        token, token_id, status_code = create_token_controller(recipient, 'student', groupId)
+        token, token_id, status_code = create_token_controller(recipient, 'student', int(groupId))
         if status_code != 201:
             return jsonify({'error': token_id}), status_code
         

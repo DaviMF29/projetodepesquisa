@@ -15,8 +15,8 @@ class Token:
         try:
             cursor = connection.cursor(buffered=True)
             cursor.execute(
-                "INSERT INTO token (email, type, group_id,user_id_sha) VALUES (%s,%s, %s)",
-                (user_email, type, group_id,user_id_sha)
+                "INSERT INTO token (email, type,user_id_sha,group_id ) VALUES (%s,%s, %s, %s)",
+                (user_email, type,user_id_sha, group_id)
             )
             connection.commit()
             return cursor.lastrowid
