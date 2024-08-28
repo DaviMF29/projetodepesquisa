@@ -63,3 +63,6 @@ class Student(User):
     def get_id_by_email_service(connection, email):
         return User.get_id_by_email_service(connection, email, 'aluno', 'emailStudent')
     
+    def get_studentId_by_email_service(connection, email):
+        return User.get_id_by_email_service(connection, email, 'aluno', 'emailStudent')
+    

@@ -38,7 +38,8 @@ def verify_student_is_in_group(connection, user_email, group_id):
     user = Student.get_student_by_email_service(connection, user_email)
     if not user:
         return abort(404, description="Usuário não encontrado")
-    group = Group.get_student_group_by_id_service(connection, user_email)
+    userId = Student.get_studentId_by_email_service(connection, user_email)
+    group = Group.get_student_group_by_id_service(connection, userId)
     if group['group_id'] != group_id:
         return abort(404, description="Usuário não está no grupo")
     return user
