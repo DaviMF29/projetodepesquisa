@@ -24,7 +24,7 @@ def create_token_controller(user_email, user_type, group_id):
             
             token = jwt.encode(payload, secretKey, algorithm='HS256')
             
-            token_id = Token.create_token_service(connection, user_email, user_type, token)
+            token_id = Token.create_token_service(connection, user_email, group_id,user_type, token)
             if token_id:
                 return token, None, 201
             else:
