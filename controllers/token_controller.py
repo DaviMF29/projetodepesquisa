@@ -14,7 +14,7 @@ def create_token_controller(user_email, user_type, group_id):
     secretKey = os.getenv('SECRET_KEY')
     try:
         token_exists = Token.get_token_by_user_email_service(connection, user_email)
-        if token_exists and token_exists.get("group_id") == group_id:
+        if token_exists and token_exists.get("group_id") == group_id and token.get("email" == user_email):
             return None, "Token já existe para este usuário", 400
         
         payload = {
