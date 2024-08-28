@@ -3,19 +3,20 @@ import mysql.connector
 from mysql.connector import Error
 
 class Token:
-    def __init__(self, email,type, user_id_sha):
+    def __init__(self, email,type, group_id,user_id_sha):
         self.email = email
         self.type = type
+        self.group_id = group_id
         self.user_id_sha = user_id_sha
 
 
     @staticmethod
-    def create_token_service(connection, user_email, type, user_id_sha):
+    def create_token_service(connection, user_email, type, group_id,user_id_sha):
         try:
             cursor = connection.cursor(buffered=True)
             cursor.execute(
-                "INSERT INTO token (email, type, user_id_sha) VALUES (%s,%s, %s)",
-                (user_email, type, user_id_sha)
+                "INSERT INTO token (email, type, group_id,user_id_sha) VALUES (%s,%s, %s)",
+                (user_email, type, group_id,user_id_sha)
             )
             connection.commit()
             return cursor.lastrowid
