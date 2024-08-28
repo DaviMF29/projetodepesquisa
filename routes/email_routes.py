@@ -82,10 +82,8 @@ def group_invite():
         groupName = data['groupName']
         groupId = data['groupId']
         recipient = data['recipient']
-        user_id = get_id_by_email_controller(recipient)
-        if not user_id:
-            return jsonify({'error': 'Usuário não encontrado'}), 404
-        token, token_id, status_code = create_token_controller(user_id, 'student', groupId)
+                
+        token, token_id, status_code = create_token_controller(recipient, 'student', groupId)
         if status_code != 201:
             return jsonify({'error': token_id}), status_code
         
@@ -95,9 +93,9 @@ def group_invite():
         if not isinstance(recipient, str):
             raise ValueError("Email inválido")
         
-        user_id = Teacher.get_teacher_by_id_service(connection, teacherId)['id']
-
-        teacherName = Teacher.get_teacher_by_id_service(connection, user_id)['name']
+        teacher = Teacher.get_teacher_by_id_service(connection, teacherId)
+        teacherName = teacher['name'] if teacher else 'Professor Desconhecido'
+        
         with open('templates/group_invite.html', 'r', encoding='utf-8') as file:
             html = file.read()
             body = html.format(group=groupName, teacher=teacherName, link=link)
@@ -110,6 +108,7 @@ def group_invite():
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
     
 @email_app.route('/api/verifyInvite', methods=['POST'])
 @jwt_required()
@@ -126,6 +125,7 @@ def verify_invite():
             return jsonify({'error': 'Token inválido'}), 401
         
         user_identity = get_jwt_identity()
+        user_email_from_jwt = user_identity['email']
         user_id_from_jwt = user_identity['id']
         group_id_from_jwt = user_identity['group_id']
         
@@ -136,14 +136,18 @@ def verify_invite():
         if not connection:
             return jsonify({'error': 'Erro ao conectar com o banco de dados'}), 500
         
-        result = verify_student_is_in_group(connection, user_id_from_jwt, group_id_from_jwt)
-        if isinstance(result, dict):
+        result = verify_student_is_in_group(connection, user_email_from_jwt, group_id_from_jwt)
+        if isinstance(result, dict) and result.get('status') == 'in_group':
             return jsonify({'message': 'Usuário está no grupo'}), 200
         else:
             return jsonify({'message': 'Usuário não está no grupo'}), 404
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    finally:
+        if connection:
+            connection.close()
+
 
 
 # # # ATALHO PARA COMENTAR == CTRL + K -> CTRL + C

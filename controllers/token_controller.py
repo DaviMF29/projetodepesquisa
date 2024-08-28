@@ -5,18 +5,18 @@ from db.bd_mysql import db_connection
 import jwt
 import datetime
 
-def create_token_controller(user_id, user_type, group_id):
+def create_token_controller(user_email, user_type, group_id):
     connection = db_connection()
     
     if connection:
         secretKey = os.getenv('SECRET_KEY')
         try:
-            token_exists = Token.get_token_by_user_id_service(connection, user_id)
+            token_exists = Token.get_token_by_user_email_service(connection, user_email)
             if token_exists:
                 return None, "Token já existe para este usuário", 400
             
             payload = {
-                'user_id': user_id,
+                'email': user_email,
                 'user_type': user_type,
                 'group_id': group_id,
                 'exp': datetime.datetime.now() + datetime.timedelta(hours=72)
@@ -24,7 +24,7 @@ def create_token_controller(user_id, user_type, group_id):
             
             token = jwt.encode(payload, secretKey, algorithm='HS256')
             
-            token_id = Token.create_token_service(connection, user_id, user_type, token)
+            token_id = Token.create_token_service(connection, user_email, user_type, token)
             if token_id:
                 return token, None, 201
             else:
@@ -38,15 +38,15 @@ def create_token_controller(user_id, user_type, group_id):
         return None, "Falha ao conectar com o banco de dados!", 500
 
 
-def delete_token_controller(user_id):
+def delete_token_controller(user_email):
     connection = db_connection()
     
     if connection:
         try:
-            token = Token.get_token_by_user_id_service(connection, user_id)
+            token = Token.get_token_by_user_email_service(connection, user_email)
             if not token:
                 return jsonify({"message": "Token não encontrado"}), 404
-            deleted = Token.delete_token_service(connection, user_id)
+            deleted = Token.delete_token_service(connection, user_email)
             if deleted:
                 return jsonify({"message": "Token deletado"}), 200
             else:
