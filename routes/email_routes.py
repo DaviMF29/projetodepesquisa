@@ -6,6 +6,7 @@ import jwt
 from controllers.student_controller import get_id_by_email_controller
 from db.bd_mysql import db_connection
 from middleware.global_middleware import verify_student_is_in_group
+from models.Student import Student
 from models.Teacher import Teacher
 from models.Group import Group
 from models.Email import sendEmail
@@ -114,7 +115,11 @@ def group_invite():
 @jwt_required()
 def verify_invite():
     try:
-        token = request.headers.get('token').split(" ")[1]
+        connection = db_connection()
+        if not connection:
+            return jsonify({'error': 'Erro ao conectar com o banco de dados'}), 500
+        
+        token = request.headers.get('Authorization').split(" ")[1]
         secretKey = os.getenv('SECRET_KEY')
         
         try:
@@ -124,19 +129,13 @@ def verify_invite():
         except jwt.InvalidTokenError:
             return jsonify({'error': 'Token inválido'}), 401
         
-        user_email_from_decoded_token = decoded_token["email"]
-        group_id_from_decoded_token = decoded_token["group_id"]
+        userToken = get_jwt_identity()
+        userID = userToken["id"]
+        userEmail = Student.get_email_by_id(userID)
 
-        connection = db_connection()
-        if not connection:
-            return jsonify({'error': 'Erro ao conectar com o banco de dados'}), 500
-        
-        result = verify_student_is_in_group(connection, user_email_from_decoded_token, group_id_from_decoded_token)
-        if isinstance(result, dict) and result.get('status') == 'in_group':
-            return jsonify({'message': 'Usuário está no grupo'}), 200
-        else:
-            return jsonify({'message': 'Usuário não está no grupo'}), 404
-        
+        if userEmail != decoded_token["email"]:
+            return jsonify({"id's incompatíveis"}), 500
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     finally:
