@@ -87,7 +87,7 @@ def group_invite():
         if status_code != 201:
             return jsonify({'error': token_id}), status_code
         
-        link = f"http://localhost:5500/template/pagina-redirecionamento.html?token={token}"
+        link = f"http://localhost:5500/pagina-redirecionamento.html?token={token}"
         subject = 'Convite para grupo'
 
         if not isinstance(recipient, str):
@@ -114,7 +114,7 @@ def group_invite():
 @jwt_required()
 def verify_invite():
     try:
-        token = request.headers.get('Authorization').split(" ")[1]
+        token = request.headers.get('token').split(" ")[1]
         secretKey = os.getenv('SECRET_KEY')
         
         try:
