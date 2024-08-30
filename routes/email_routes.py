@@ -124,19 +124,14 @@ def verify_invite():
         except jwt.InvalidTokenError:
             return jsonify({'error': 'Token inválido'}), 401
         
-        user_identity = get_jwt_identity()
-        user_email_from_jwt = user_identity['email']
-        user_id_from_jwt = user_identity['id']
-        group_id_from_jwt = user_identity['group_id']
-        
-        if decoded_token['user_id'] != user_id_from_jwt:
-            return jsonify({'error': 'IDs não coincidem'}), 403
-        
+        user_email_from_decoded_token = decoded_token["email"]
+        group_id_from_decoded_token = decoded_token["group_id"]
+
         connection = db_connection()
         if not connection:
             return jsonify({'error': 'Erro ao conectar com o banco de dados'}), 500
         
-        result = verify_student_is_in_group(connection, user_email_from_jwt, group_id_from_jwt)
+        result = verify_student_is_in_group(connection, user_email_from_decoded_token, group_id_from_decoded_token)
         if isinstance(result, dict) and result.get('status') == 'in_group':
             return jsonify({'message': 'Usuário está no grupo'}), 200
         else:
