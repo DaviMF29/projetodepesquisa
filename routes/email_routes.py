@@ -87,7 +87,7 @@ def group_invite():
         if status_code != 201:
             return jsonify({'error': token_id}), status_code
         
-        link = 'http://localhost:5500/template/pagina-redirecionamento.html'
+        link = f"http://localhost:5500/template/pagina-redirecionamento.html?token={token}"
         subject = 'Convite para grupo'
 
         if not isinstance(recipient, str):
