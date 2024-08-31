@@ -13,6 +13,7 @@ from models.Email import sendEmail
 from passlib.hash import pbkdf2_sha256 as sha256
 from controllers.token_controller import create_token_controller
 
+from models.Token import Token
 from models.Users import User
 
 email_app = Blueprint("email_app", __name__)
@@ -111,7 +112,7 @@ def group_invite():
         return jsonify({'error': str(e)}), 500
 
     
-@email_app.route('/api/verifyInvite', methods=['POST'])
+@email_app.route('/api/verifyInvite', methods=['GET'])
 @jwt_required()
 def verify_invite():
     try:
@@ -119,23 +120,12 @@ def verify_invite():
         if not connection:
             return jsonify({'error': 'Erro ao conectar com o banco de dados'}), 500
         
-        token = request.headers.get('Authorization').split(" ")[1]
-        secretKey = os.getenv('SECRET_KEY')
-        
-        try:
-            decoded_token = jwt.decode(token, secretKey, algorithms=['HS256'])
-        except jwt.ExpiredSignatureError:
-            return jsonify({'error': 'Token expirado'}), 401
-        except jwt.InvalidTokenError:
-            return jsonify({'error': 'Token inválido'}), 401
-        
-        userToken = get_jwt_identity()
-        userID = userToken["id"]
-        userEmail = Student.get_email_by_id(userID)
-
-        if userEmail != decoded_token["email"]:
-            return jsonify({"id's incompatíveis"}), 500
-
+        user = get_jwt_identity()
+        userEmail = User.get_email_by_id(user["id"])
+        token = Token.get_token_by_user_email_service
+        if token["email"]!= userEmail:
+            return jsonify({"Emails incompativeis"})
+        return jsonify({token})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     finally:
