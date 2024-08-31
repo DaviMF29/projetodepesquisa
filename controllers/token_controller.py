@@ -65,11 +65,13 @@ def get_groupId_by_token_controller(token):
     connection = db_connection()
 
     if connection:
-        group_id = Token.get_group_id_by_token(connection, token)  
-        connection.close()  
+        try:
+            group_id = Token.get_group_id_by_token(connection, token)
+        finally:
+            connection.close()
 
         if not group_id:
             return jsonify({"message": "Token não existe"}), 404  
-        return jsonify({"groupId": group_id}), 200 
+        return jsonify(group_id), 200 
     else:
         return jsonify({"message": "Falha ao conectar com o banco de dados!"}), 500

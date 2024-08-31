@@ -10,8 +10,10 @@ def delete_token_route(user_id):
 
 @token_app.route('/api/token/groupid', methods=['GET'])
 def get_groupId_by_token_routes():
-    token = request.args.get('token')  
+    token = request.args.get('token')
+    token = str(token)
     if not token:
         return jsonify({"message": "Token não fornecido!"}), 400
     
-    return get_groupId_by_token_controller(token) 
+    return get_groupId_by_token_controller(token)
+

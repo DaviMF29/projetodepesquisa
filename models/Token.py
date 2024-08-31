@@ -82,14 +82,15 @@ class Token:
 
     def get_group_id_by_token(connection, token):
         try:
+            print(token)
             cursor = connection.cursor(dictionary=True)
-            cursor.execute("SELECT groupId FROM token WHERE token = %s", (token,))
+            cursor.execute("SELECT groupId FROM token WHERE user_id_sha = %s", (token,))
             result = cursor.fetchone()
             
             if result is None:
                 return None
             
-            return result['groupId']
+            return result
         except Error as e:
             return jsonify(f"Error getting token from database: {e}")
 
