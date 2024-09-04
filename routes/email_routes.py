@@ -33,7 +33,6 @@ def sendEmail_route():
         return jsonify({'error': str(e)}), 500
     
 @email_app.route('/api/forgetPassword', methods=['POST'])
-@jwt_required()
 def forgetPassword():
     connection = db_connection()
     if not connection:
