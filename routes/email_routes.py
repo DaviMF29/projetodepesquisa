@@ -36,7 +36,8 @@ def sendEmail_route():
 def forgetPassword():
     try:
         data = request.get_json()
-
+        table_name = ""
+        email_column = ""
         recipient = data.get('email')
         if not recipient or not isinstance(recipient, str):
             return jsonify({'error': 'Email inválido'}), 400
@@ -45,7 +46,16 @@ def forgetPassword():
         if not connection:
             return jsonify({'error': 'Erro ao conectar com o banco de dados'}), 500
         
-        user = User.get_user_by_email_service(connection, recipient)
+        if "servidor" in recipient:
+            table_name = "professor"
+            email_column = "emailTeacher"
+        elif "aluno" in recipient:
+            table_name = "aluno"
+            email_column = "emailStudent"
+        else:
+            return jsonify({'error': "Domínio não permitido"}), 500 
+
+        user = User.get_user_by_email_service(connection, recipient, table_name,email_column)
         if not user:
             return jsonify({'error': 'Usuário não encontrado'}), 404
 
