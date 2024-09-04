@@ -34,16 +34,23 @@ def sendEmail_route():
     
 @email_app.route('/api/forgetPassword', methods=['POST'])
 def forgetPassword():
-    connection = db_connection()
-    if not connection:
-        return jsonify({'error': 'Erro ao conectar com o banco de dados'}), 500
     try:
-        user_identity = get_jwt_identity()
-        user_id = user_identity['id'] 
-        user_type = user_identity['type']
+        data = request.get_json()
 
-        if not isinstance(user_id, str):
-            user_id = str(user_id)
+        recipient = data.get('email')
+        if not recipient or not isinstance(recipient, str):
+            return jsonify({'error': 'Email inválido'}), 400
+
+        connection = db_connection()
+        if not connection:
+            return jsonify({'error': 'Erro ao conectar com o banco de dados'}), 500
+        
+        user = User.get_user_by_email_service(connection, recipient)
+        if not user:
+            return jsonify({'error': 'Usuário não encontrado'}), 404
+
+        user_id = str(user['id'])
+        user_type = user['type']
 
         userIdCrip = sha256.hash(user_id)
 
@@ -51,25 +58,18 @@ def forgetPassword():
 
         link = f'http://localhost:3000/{userIdCrip}'
         subject = 'Recuperação de senha'
-
-        recipient = User.get_user_by_id_service(connection, user_id, 'aluno'
-                                                if user_type == 'student' else 'professor')['email']
-
-        if not isinstance(recipient, str):
-            raise ValueError("Email inválido")
         
         with open('templates/forget_password.html', 'r', encoding='utf-8') as file:
             body = file.read()
         
         body = body.replace('{link}', link)
 
-        recipient = "davi.almeida@aluno.uepb.edu.br"
-
         sendEmail(subject, recipient, body)
 
         return jsonify({'message': 'E-mail enviado com sucesso'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 @email_app.route('/api/groupInvite', methods=['POST'])
 @jwt_required()
