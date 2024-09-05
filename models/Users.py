@@ -258,3 +258,15 @@ class User:
                 return None
         finally:
             cursor.close()
+
+    def update_password_field(connection, user_id, table_name, password):
+        cursor = connection.cursor()
+        try:
+            cursor.execute(f"UPDATE {table_name} SET password = %s WHERE id = %s", (password, user_id))
+            connection.commit()
+            return True
+        except Exception as e:
+            print(f"Erro ao atualizar senha: {e}")
+            return False
+        finally:
+            cursor.close()

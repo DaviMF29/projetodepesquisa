@@ -149,3 +149,28 @@ def get_groups_from_student_route():
     user_id = get_jwt_identity()["id"]
     response = get_groups_from_student_controller(user_id)
     return jsonify(response)
+
+@user_app.route('/api/student/password', methods=['PUT'])
+def update_password():
+    data = request.get_json()
+
+    email = data.get('email')
+    password = data.get('password')
+    confirm_password = data.get('confirm_password')
+
+    if not all([email, password, confirm_password]):
+        return jsonify({"message": "All fields are required"}), 400
+
+    if password != confirm_password:
+        return jsonify({"message": "Passwords do not match!"}), 400
+
+    if len(password) < 6:
+        return jsonify({"message": "Password must have at least 6 characters"}), 400
+    
+    if len(password) > 20:
+        return jsonify({"message": "Password must not exceed 20 characters"}), 400
+
+    hashed_password = hashpw(password.encode('utf-8'), gensalt()).decode('utf-8')
+
+    response = update_password_field_student_controller(email, hashed_password)
+    return jsonify(response)

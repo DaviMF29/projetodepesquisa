@@ -134,3 +134,16 @@ def get_groups_from_teacher_controller(user_id):
         return groups
     else:
         return {"message": "Falha ao conectar com o banco de dados!"}, 500
+
+def update_password_field_teacher_controller(user_id, password):
+    connection = db_connection()
+    if connection:
+        try:
+            Teacher.update_password_field_teacher(connection, user_id, 'professor', password)
+            return {"message": "Senha atualizada com sucesso!"}, 200
+        except Exception as e:
+            return {"message": f"Erro ao atualizar senha: {e}"}, 500
+        finally:
+            connection.close()
+    else:
+        return {"message": "Falha ao conectar com o banco de dados!"}, 500

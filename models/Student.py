@@ -66,3 +66,6 @@ class Student(User):
     def get_studentId_by_email_service(connection, email):
         return User.get_id_by_email_service(connection, email, 'aluno', 'emailStudent')
     
+    def update_password_field_student(connection, user_id, table_name, password):
+        return User.update_password_field(user_id, table_name, password)
+    
