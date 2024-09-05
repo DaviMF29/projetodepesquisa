@@ -34,19 +34,18 @@ class Token:
             cursor.close()
 
     @staticmethod
-    def delete_token_service(connection, user_email):
+    def delete_token_service(connection, user_email, token_type):
         try:
             cursor = connection.cursor()
-            cursor.execute("DELETE FROM token WHERE email = %s", (user_email,))
+            cursor.execute("DELETE FROM token WHERE email = %s AND token_type = %s", (user_email, token_type))
             connection.commit()
-            return True
-
+            
+            return cursor.rowcount > 0 
         except Error as e:
-            print(f"Error deleting token from database: {e}")
             return False
-
         finally:
             cursor.close()
+
 
     @staticmethod
     def get_token_by_user_id_service(connection, user_id):
@@ -98,7 +97,22 @@ class Token:
         except Error as e:
             return jsonify(f"Error getting token from database: {e}")
 
-    
+    @staticmethod
+    def get_token_by_user_email_and_type_service(connection, user_email, token_type):
+        try:
+            cursor = connection.cursor(dictionary=True)
+            cursor.execute("SELECT * FROM token WHERE email = %s AND token_type = %s", (user_email, token_type))
+            token = cursor.fetchone()
+            
+            if token is None:
+                return None
+            
+            return token
+        except Error as e:
+            return None
+        finally:
+            cursor.close()
+
 
 
         

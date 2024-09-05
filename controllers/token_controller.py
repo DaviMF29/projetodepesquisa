@@ -48,25 +48,36 @@ def create_token_controller(user_email, user_type, group_id, type_token):
 
 
 
-def delete_token_controller(user_email):
+def delete_token_controller(user_email, token_type):
     connection = db_connection()
     
-    if connection:
-        try:
-            token = Token.get_token_by_user_email_service(connection, user_email)
-            if not token:
-                return jsonify({"message": "Token não encontrado"}), 404
-            deleted = Token.delete_token_service(connection, user_email)
-            if deleted:
-                return jsonify({"message": "Token deletado"}), 200
-            else:
-                return jsonify({"message": "Falha ao deletar token"}), 500
-        except Exception as e:
-            return jsonify({"message": "Erro interno no servidor"}), 500
-        finally:
-            connection.close()
-    else:
+    if not connection:
         return jsonify({"message": "Falha ao conectar com o banco de dados!"}), 500
+    
+    try:
+        token = Token.get_token_by_user_email_and_type_service(connection, user_email, token_type)
+        
+        if not token:
+            return jsonify({"message": "Token não encontrado para o tipo especificado"}), 404
+        
+        if token_type not in ["password", "invite"]:
+            return jsonify({"message": "Tipo de token inválido"}), 400
+        
+        deleted = Token.delete_token_service(connection, user_email, token_type)
+        
+        if deleted:
+            return jsonify({"message": "Token deletado com sucesso"}), 200
+        else:
+            return jsonify({"message": "Falha ao deletar token"}), 500
+    
+    except Exception as e:
+        return jsonify({"message": f"Erro interno no servidor: {str(e)}"}), 500
+    
+    finally:
+        if connection:
+            connection.close()
+
+
     
 def get_groupId_by_token_controller(token):
     connection = db_connection()
