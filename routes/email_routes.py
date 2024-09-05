@@ -49,24 +49,26 @@ def forgetPassword():
         if "servidor" in recipient:
             table_name = "professor"
             email_column = "emailTeacher"
+            user_type = "teacher"
         elif "aluno" in recipient:
             table_name = "aluno"
             email_column = "emailStudent"
+            user_type = "student"
+
         else:
             return jsonify({'error': "Domínio não permitido"}), 500 
-
+        
         user = User.get_user_by_email_service(connection, recipient, table_name,email_column)
         if not user:
             return jsonify({'error': 'Usuário não encontrado'}), 404
+        
+        token, error_message, status_code = create_token_controller(recipient, user_type, "", 'password')
 
-        user_id = str(user['id'])
-        user_type = user['type']
+        if not token:
+            return {"error": error_message}, status_code
 
-        userIdCrip = sha256.hash(user_id)
 
-        create_token_controller(user_id, user_type, userIdCrip)
-
-        link = f'http://localhost:3000/{userIdCrip}'
+        link = f'http://localhost:3000/{token}'
         subject = 'Recuperação de senha'
         
         with open('templates/forget_password.html', 'r', encoding='utf-8') as file:
@@ -94,7 +96,7 @@ def group_invite():
         groupId = data['groupId']
         recipient = data['recipient']
                 
-        token, token_id, status_code = create_token_controller(recipient, 'student', int(groupId))
+        token, token_id, status_code = create_token_controller(recipient, 'student', int(groupId),'invite')
         if status_code != 201:
             return jsonify({'error': token_id}), status_code
         

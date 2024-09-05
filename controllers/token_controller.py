@@ -1,11 +1,11 @@
 import os
-from flask import jsonify
+from flask import abort, jsonify
 from models.Token import Token
 from db.bd_mysql import db_connection
 import jwt
 import datetime
 
-def create_token_controller(user_email, user_type, group_id):
+def create_token_controller(user_email, user_type, group_id, type_token):
     connection = db_connection()
     
     if not connection:
@@ -17,9 +17,13 @@ def create_token_controller(user_email, user_type, group_id):
 
     try:
         token_exists = Token.get_token_by_user_email_service(connection, user_email)
-        if token_exists and token_exists.get("groupId") == group_id and token_exists.get("email") == user_email:
-            return None, "Token já existe para este usuário", 400
+
+        if type_token == "password" and token_exists:
+            return abort(404, description="Token já existe para este usuário nesta função")
         
+        if token_exists and token_exists.get("groupId") == group_id and token_exists.get("email") == user_email:
+            return None, "Token já existe para este usuário nesta função", 400
+
         payload = {
             'email': user_email,
             'user_type': user_type,
@@ -29,7 +33,8 @@ def create_token_controller(user_email, user_type, group_id):
         
         token = jwt.encode(payload, secretKey, algorithm='HS256')
         
-        token_id = Token.create_token_service(connection, user_email, user_type, group_id, token)
+        token_id = Token.create_token_service(connection, user_email, user_type, group_id, token, type_token)
+
         if token_id:
             return token, None, 201
         else:
@@ -40,6 +45,8 @@ def create_token_controller(user_email, user_type, group_id):
     finally:
         if connection:
             connection.close()
+
+
 
 def delete_token_controller(user_email):
     connection = db_connection()

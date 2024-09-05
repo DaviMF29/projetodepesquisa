@@ -7,22 +7,23 @@ from mysql.connector import Error
 secretKey = os.getenv('SECRET_KEY')
 
 class Token:
-    def __init__(self, email,type, group_id,user_id_sha):
+    def __init__(self, email,type, group_id,user_id_sha, type_token):
         self.email = email
         self.type = type
         self.group_id = group_id
         self.user_id_sha = user_id_sha
+        self.type_token = type_token
 
 
     @staticmethod
-    def create_token_service(connection, user_email, type, group_id,user_id_sha):
+    def create_token_service(connection, user_email, type, group_id,user_id_sha,type_token):
         try:
             print(group_id)
 
             cursor = connection.cursor(buffered=True)
             cursor.execute(
-                "INSERT INTO token (email, type,user_id_sha,groupId ) VALUES (%s,%s, %s, %s)",
-                (user_email, type,user_id_sha, group_id)
+                "INSERT INTO token (email, type,user_id_sha,groupId,type_token ) VALUES (%s,%s, %s, %s, %s)",
+                (user_email, type,user_id_sha, group_id,type_token)
             )
             connection.commit()
             return cursor.lastrowid
@@ -69,6 +70,7 @@ class Token:
         try:
             cursor = connection.cursor(dictionary=True)
             cursor.execute("SELECT * FROM token WHERE email = %s", (user_email,))
+
             token = cursor.fetchone()
             
             if token is None:
@@ -78,7 +80,9 @@ class Token:
         except Error as e:
             return None
         finally:
-            cursor.close()
+            if cursor:
+                cursor.close()
+
 
     def get_group_id_by_token(connection, token):
         try:
