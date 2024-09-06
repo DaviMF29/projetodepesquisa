@@ -47,21 +47,11 @@ def forgetPassword():
             return jsonify({'error': 'Erro ao conectar com o banco de dados'}), 500
         
         if "servidor" in recipient:
-            table_name = "professor"
-            email_column = "emailTeacher"
             user_type = "teacher"
         elif "aluno" in recipient:
-            table_name = "aluno"
-            email_column = "emailStudent"
             user_type = "student"
-
         else:
             return jsonify({'error': "Domínio não permitido"}), 500 
-        
-        user = User.get_user_by_email_service(connection, recipient, table_name,email_column)
-        if not user:
-            return jsonify({'error': 'Usuário não encontrado'}), 404
-        
         token, error_message, status_code = create_token_controller(recipient, user_type, "", 'password')
 
         if not token:

@@ -101,17 +101,20 @@ class Token:
     def get_token_by_user_email_and_type_service(connection, user_email, token_type):
         try:
             cursor = connection.cursor(dictionary=True)
-            cursor.execute("SELECT * FROM token WHERE email = %s AND token_type = %s", (user_email, token_type))
-            token = cursor.fetchone()
+            query = "SELECT * FROM token WHERE email = %s AND type_token = %s"
+            cursor.execute(query, (user_email, token_type))
             
+            token = cursor.fetchone()
             if token is None:
                 return None
             
             return token
-        except Error as e:
+        except Exception as e:
             return None
         finally:
-            cursor.close()
+            if cursor:
+                cursor.close()
+
 
 
 

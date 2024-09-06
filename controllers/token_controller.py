@@ -16,10 +16,10 @@ def create_token_controller(user_email, user_type, group_id, type_token):
         return None, "Chave secreta não encontrada", 500
 
     try:
-        token_exists = Token.get_token_by_user_email_service(connection, user_email)
-
+        token_exists = Token.get_token_by_user_email_and_type_service(connection, user_email, type_token)
+        print(token_exists)
         if type_token == "password" and token_exists:
-            return abort(404, description="Token já existe para este usuário nesta função")
+            return None, "Token já existe para este usuário nesta função", 400
         
         if token_exists and token_exists.get("groupId") == group_id and token_exists.get("email") == user_email:
             return None, "Token já existe para este usuário nesta função", 400
