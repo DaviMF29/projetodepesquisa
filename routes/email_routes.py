@@ -36,8 +36,6 @@ def sendEmail_route():
 def forgetPassword():
     try:
         data = request.get_json()
-        table_name = ""
-        email_column = ""
         recipient = data.get('email')
         if not recipient or not isinstance(recipient, str):
             return jsonify({'error': 'Email inválido'}), 400
@@ -58,7 +56,7 @@ def forgetPassword():
             return {"error": error_message}, status_code
 
 
-        link = f'http://localhost:3000/{token}'
+        link = f'http://localhost:5500/templates/nova-senha.html'
         subject = 'Recuperação de senha'
         
         with open('templates/forget_password.html', 'r', encoding='utf-8') as file:
