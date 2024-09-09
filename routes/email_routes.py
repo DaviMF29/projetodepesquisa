@@ -56,7 +56,7 @@ def forgetPassword():
             return {"error": error_message}, status_code
 
 
-        link = f'http://localhost:5500/templates/nova-senha.html'
+        link = f'http://localhost:5500/templates/nova-senha.html?token`{token}'
         subject = 'Recuperação de senha'
         
         with open('templates/forget_password.html', 'r', encoding='utf-8') as file:
