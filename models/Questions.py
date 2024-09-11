@@ -14,33 +14,30 @@ class Questions:
 
 
     @staticmethod
-    def get_questions_service_teacher(connection, conteudo, skill):
+    def get_questions_service_teacher(connection, conteudo):
         with connection.cursor() as cursor:
             query = """
             SELECT  q.id_questions, q.level_questions, q.skill_question, g.content, 
                     q.question,  q.answer 
             FROM questions q 
             JOIN group_questions g ON q.id_group_questions = g.id_group_questions 
-            WHERE g.content = %s and q.skill_question = %s;
+            WHERE g.content = %s;
             """
-            cursor.execute(query, (conteudo, skill,))
+            cursor.execute(query, (conteudo,))
             results = cursor.fetchall()
 
         if not results:
             return {"error": "Nenhum resultado encontrado para os critérios fornecidos."}, []
 
-        cabecalho = {
-            "Level": results[0][1],
-            "Skill": results[0][2],
-            "Conteúdo": results[0][3],
-        }
-
         questions = [
             {
+                "Level": row[1],
+                "Skill": row[2],
+                "Conteúdo": row[3],
                 "ID": row[0],
                 "Question": row[4],
                 "RESPOSTA:": row[5]
             }
             for row in results
         ]
-        return cabecalho, questions
+        return questions
