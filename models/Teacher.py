@@ -53,5 +53,5 @@ class Teacher(User):
     def get_groups_from_teacher_service(connection, user_id):
         return User.get_groups_from_user_service(connection, user_id, 'professor')
     
-    def update_password_field_teacher(connection, user_id, table_name, password):
-        return User.update_password_field(user_id, table_name, password)
+    def update_password_field_teacher(connection, email, email_name_teacher, table_name, password_name_teacher, password):
+        return User.update_password_field(connection, email, email_name_teacher, table_name, password_name_teacher, password)

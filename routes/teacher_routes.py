@@ -153,6 +153,7 @@ def get_groups_from_teacher_route():
 @teacher_app.route('/api/teacher/password', methods=['PUT'])
 def update_password_routes():
     data = request.get_json()
+
     email = data.get('email')
     password = data.get('password')
     confirm_password = data.get('confirm_password')
@@ -169,9 +170,8 @@ def update_password_routes():
     if len(password) > 20:
         return jsonify({"message": "Password must not exceed 20 characters"})
     
-    hashed_password = hashpw(password.encode('utf-8'), gensalt())
+    hashed_password = hashpw(password.encode('utf-8'), gensalt()).decode('utf-8')
+  
 
-    data['password'] = hashed_password.decode('utf-8')  
-
-    response = update_password_field_teacher_controller(email, data)
+    response = update_password_field_teacher_controller(email, hashed_password)
     return jsonify(response)

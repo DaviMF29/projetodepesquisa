@@ -259,10 +259,10 @@ class User:
         finally:
             cursor.close()
 
-    def update_password_field(connection, user_id, table_name, password):
+    def update_password_field(connection, email, email_name, table_name, passord_name, password):
         cursor = connection.cursor()
         try:
-            cursor.execute(f"UPDATE {table_name} SET password = %s WHERE id = %s", (password, user_id))
+            cursor.execute(f"UPDATE {table_name} SET {passord_name} = %s WHERE {email_name} = %s", (password, email,))
             connection.commit()
             return True
         except Exception as e:
