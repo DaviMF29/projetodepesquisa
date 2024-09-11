@@ -148,11 +148,11 @@ def get_id_by_email_controller(email):
     else:
         return {"message": "Falha ao conectar com o banco de dados!"}, 500
     
-def update_password_field_student_controller(user_id, password):
+def update_password_field_student_controller(email, password):
     connection = db_connection()
     if connection:
         try:
-            Student.update_password_field_student(connection, user_id, 'aluno', password)
+            Student.update_password_field_student(connection, email, 'emailStudent', 'aluno', 'passwordStudent', password)
             return {"message": "Senha atualizada com sucesso!"}, 200
         except Exception as e:
             return {"message": f"Erro ao atualizar senha: {e}"}, 500
