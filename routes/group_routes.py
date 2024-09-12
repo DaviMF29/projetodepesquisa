@@ -40,10 +40,13 @@ def get_all_students_group_routes(id_group):
 @group_app.route("/api/group/student/<groupId>", methods=["DELETE"])
 @jwt_required()
 def delete_student_from_group_routes(groupId):
-    data = request.get_json()
-    current_user_id = get_jwt_identity()    
-    studentId = data["studentId"]
-    response, status_code = delete_student_from_group_controller(current_user_id,groupId, studentId)
+    current_user_id = get_jwt_identity()
+    studentId = request.args.get("studentId")
+    if studentId is None:
+        return jsonify({"error": "studentId parameter is required"}), 400
+    
+    response, status_code = delete_student_from_group_controller(current_user_id, groupId, studentId)
+    
     return jsonify(response), status_code
 
 @group_app.route("/api/group/<groupId>", methods=["DELETE"])
