@@ -132,23 +132,42 @@ class User:
             cursor.execute(f"SELECT * FROM {table_name} WHERE {email_column} = %s", (email,))
             user = cursor.fetchone()  
 
-            if user:
-                return {
-                    "id": user[0],
-                    "name": user[1],
-                    "email": user[2],
-                    "password": user[3],
-                    "birth": user[4],
-                    "gender": user[5],
-                    "institution": user[6],
-                    "state": user[7],
-                    "city": user[8],
-                    "formation": user[9],
-                    "registration": user[10]
-                    
-                }
-            else:
-                return None
+            if table_name == 'professor':
+                if user:
+                    return {
+                        "id": user[0],
+                        "name": user[1],
+                        "email": user[2],
+                        "password": user[3],
+                        "birth": user[4],
+                        "gender": user[5],
+                        "institution": user[6],
+                        "state": user[7],
+                        "city": user[8],
+                        "formation": user[9],
+                        "registration": user[10]
+                        
+                    }
+                else:
+                    return None
+                
+            elif table_name == 'aluno':
+                if user:
+                    return {
+                        "id": user[0],
+                        "name": user[1],
+                        "email": user[2],
+                        "password": user[3],
+                        "birth": user[4],
+                        "gender": user[5],
+                        "institution": user[6],
+                        "state": user[8],
+                        "city": user[9],
+                        "registration": user[10]
+                        
+                    }
+                else:
+                    return None
 
         finally:
             cursor.close()
