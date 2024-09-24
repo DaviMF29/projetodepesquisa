@@ -3,6 +3,8 @@ from bcrypt import gensalt, hashpw
 from flask import Blueprint, current_app, request, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from controllers.teacher_controller import *
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 from models.Teacher import Teacher
 
@@ -33,6 +35,13 @@ def add_user_router():
     
     if "@" not in email:
         return jsonify({"message": "Invalid email"}), 400
+    
+    date_now = datetime.now()
+    birth = datetime.strptime(birth, '%d/%m/%Y')
+    idade = relativedelta(date_now, birth)
+
+    if idade.years < 15:
+        return jsonify({"message": "invalid date"}), 400
 
     domain = email.split("@")[-1]
     allowed_domains = ["servidor.uepb.edu.br"]

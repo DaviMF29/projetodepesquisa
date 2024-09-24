@@ -6,6 +6,8 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 from controllers.student_controller import *
 from db.firebase import delete_file_from_upload, handle_image_upload, upload_image_to_firebase
 from models.Student import Student
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 user_app = Blueprint('user_app', __name__)
 
@@ -33,6 +35,13 @@ def add_user_router():
     
     if "@" not in email:
         return jsonify({"message": "Invalid email"}), 400
+    
+    date_now = datetime.now()
+    birth = datetime.strptime(birth, '%d/%m/%Y')
+    idade = relativedelta(date_now, birth)
+
+    if idade.years < 15:
+        return jsonify({"message": "invalid date"}), 400
 
     domain = email.split("@")[-1]
     allowed_domains = ["aluno.uepb.edu.br"]
