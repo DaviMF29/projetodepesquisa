@@ -6,7 +6,6 @@ from flask_jwt_extended import jwt_required
 
 question_app = Blueprint("question_app", __name__)
 
-
 @question_app.route("/api/question/level", methods=['GET'])
 def get_questions_by_level_routes():
     student_level = request.args.get('level')
