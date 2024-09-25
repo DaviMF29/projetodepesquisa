@@ -10,6 +10,7 @@ from routes.auth_routes import auth_app
 from routes.email_routes import email_app
 from routes.token_routes import token_app
 from routes.questions_routes import question_app
+from routes.activity_routes import activity_app
 
 app = Flask(__name__)
 
@@ -24,6 +25,7 @@ app.register_blueprint(auth_app)
 app.register_blueprint(email_app)
 app.register_blueprint(token_app)
 app.register_blueprint(question_app)
+app.register_blueprint(activity_app)
 
 # Configurações adicionais
 app.config['UPLOAD_FOLDER'] = 'uploads/'

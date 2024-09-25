@@ -56,7 +56,7 @@ def forgetPassword():
             return {"error": error_message}, status_code
 
 
-        link = f'http://localhost:5500/templates/nova-senha.html?token={token}'
+        link = f'screen-programming2024.vercel.app/html/nova-senha.html?token={token}'
         subject = 'Recuperação de senha'
         
         with open('templates/forget_password.html', 'r', encoding='utf-8') as file:
@@ -88,7 +88,7 @@ def group_invite():
         if status_code != 201:
             return jsonify({'error': token_id}), status_code
         
-        link = f"http://localhost:5500/templates/pagina-redirecionamento.html?token={token}"
+        link = f"http://screen-programming2024.vercel.app/html/pagina-redirecionamento.html?token={token}"
         subject = 'Convite para grupo'
 
         if not isinstance(recipient, str):
