@@ -36,4 +36,3 @@ def calculate_student_level(student_responses, question_params):
         theta += learning_rate * (response - prob_correct)
 
     return theta
-
