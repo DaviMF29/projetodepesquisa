@@ -8,3 +8,4 @@ passlib
 firebase_admin
 werkzeug
 python-dateutil
+numpy
