@@ -1,3 +1,5 @@
+from decimal import Decimal
+from controllers.student_controller import update_levelStudent_controller
 from db.bd_mysql import db_connection
 from models import Student
 from models.Questions import Questions
@@ -18,14 +20,13 @@ def get_questions_by_level_service_controller(student_level):
 # Função para definir o nível inicial do aluno (valor fixo)
 def get_student_initial_level(user_id):
     connection = db_connection()
-    return Student.get_student_lvl_service(connection,user_id)
+    return Student.get_student_lvl_service(connection,user_id["id"])
 
-# Função para calcular o nível do aluno (pode ser usada futuramente)
-def calculate_student_level(student_responses, question_params):
-    theta = 0.0
-    learning_rate = 0.1
 
-    # Sem histórico, o nível inicial é fixo, mas a função está preparada para calcular no futuro
+def calculate_student_level(student_responses, question_params, user_id):
+    theta = get_student_initial_level(user_id)
+    learning_rate = Decimal('0.1')  # Convert to Decimal
+
     for response, params in zip(student_responses, question_params):
         discrimination, difficulty, guessing = params
         
@@ -34,5 +35,6 @@ def calculate_student_level(student_responses, question_params):
 
         # Atualiza o theta baseado na resposta do aluno
         theta += learning_rate * (response - prob_correct)
-
+    theta = round(theta, 4)
+    update_levelStudent_controller(user_id, theta)  # Certifique-se de que você tem esta função implementada
     return theta

@@ -108,7 +108,8 @@ class User:
                         "state": user[8],
                         "city": user[9],
                         "registration": user[10],
-                        "photo": user[11]
+                        "photo": user[11],
+                        "levelStudent"  : user[12]
                         
                     }
                 else:

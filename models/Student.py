@@ -2,9 +2,8 @@ from models.Users import User
 
 
 class Student(User):
-    #ADICIONAR O LEVEL
-    def __init__(self, name, email, password, birth=None, gender=None, institution=None, period=None, state=None, city=None, registration=None, image=None):
-        super().__init__(name, email, password, birth, gender, institution, state, city, registration,image)
+    def __init__(self, name, email, password, levelStudent = 0.0, birth=None, gender=None, institution=None, period=None, state=None, city=None, registration=None, image=None):
+        super().__init__(name, email, password, birth, gender, institution, state, city, registration,image, levelStudent)
         self.period = period
 
     def to_db_format(self):
@@ -28,19 +27,29 @@ class Student(User):
             student_data = self.to_db_format()
             return self.create_user_service(connection, 'aluno', student_data)
         except Exception as e:
-            print(f"Erro ao criar serviço de estudante: {e}")
             return None
 
-    
     def get_student_lvl_service(connection, user_id):
         cursor = connection.cursor()
         try:
-            cursor.execute("SELECT level FROM student WHERE id = %s", (user_id,))
-            level = cursor.fetchone()
-            if level:
+            cursor.execute("SELECT levelStudent FROM aluno WHERE id = %s", (user_id,))
+            result = cursor.fetchone()
+            if result:
+                level = result[0]
                 return level
             else:
                 return None
+        finally:
+            cursor.close()
+
+    def update_levelStudent_service(connection, user_id, level):
+        cursor = connection.cursor()
+        try:
+            cursor.execute("UPDATE aluno SET levelStudent = %s WHERE id = %s", (level, user_id))
+            connection.commit()
+            return True
+        except Exception as e:
+            return False
         finally:
             cursor.close()
     

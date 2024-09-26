@@ -14,10 +14,7 @@ class Questions:
             results = cursor.fetchall()
 
         if not results:
-            return {"error": "Nenhuma questão encontrada."}, []
-
-        # Lista para armazenar as questões adequadas
-        suitable_questions = []
+            return {"error": "Nenhuma questão encontrada."}, 200
 
         # Iterar sobre as questões e os parâmetros TRI
         for row, params in zip(results, question_params):
@@ -32,21 +29,25 @@ class Questions:
             # Calcular a probabilidade de acerto com base nos parâmetros TRI
             prob_correct = calculate_question_prob(student_level, slope, threshold, asymptote)
 
-            # Se a questão for adequada ao nível do aluno, adiciona à lista
+            # Se a questão for adequada ao nível do aluno, retorna imediatamente
             if is_question_suitable(prob_correct):
-                suitable_questions.append({
+                return {
                     "ID": question_id,
                     "Skill": skill,
                     "Question Image": question_image,
                     "Answer": answer,
                     "Question Value": prob_correct
-                })
+                }, 200
 
-        if not suitable_questions:
-            return {"error": "Nenhuma questão adequada encontrada."}, 200
+        # Se nenhuma questão for adequada, retorna uma mensagem de erro
+        return {"error": "Nenhuma questão adequada encontrada."}, 200
 
-        return suitable_questions, 200
-
+    def get_params_by_question_id(connection, question_id):
+        query = "SELECT slope, threshold, asymptote FROM questions WHERE id_questions = %s"
+        cursor = connection.cursor()
+        cursor.execute(query, (question_id,))
+        params = cursor.fetchone()
+        return params
     
     def get_question_params(connection):
         query = "SELECT id_questions, slope, threshold, asymptote FROM questions"
@@ -56,12 +57,12 @@ class Questions:
         return [(param[0], param[1], param[2], param[3]) for param in params]
 
 def calculate_question_prob(student_level, slope, threshold, asymptote):
-    # Ensure all values are floats for compatibility in calculations
+
     student_level = float(student_level) if isinstance(student_level, Decimal) else student_level
     slope = float(slope) if isinstance(slope, Decimal) else slope
     threshold = float(threshold) if isinstance(threshold, Decimal) else threshold
     asymptote = float(asymptote) if isinstance(asymptote, Decimal) else asymptote
-    
+
     return asymptote + (1 - asymptote) / (1 + np.exp(-slope * (student_level - threshold)))
 
 

@@ -158,3 +158,15 @@ def update_password_field_student_controller(email, password):
             return {"message": f"Erro ao atualizar senha: {e}"}, 500
     else:
         return {"message": "Falha ao conectar com o banco de dados!"},
+
+def update_levelStudent_controller(user_id, level):
+    connection = db_connection()
+    if connection:
+        verify_id_exists(connection, user_id["id"], 'student')
+        try:
+            Student.update_levelStudent_service(connection, user_id["id"], level)
+            return {"message": "Nível do aluno atualizado com sucesso!"}, 200
+        except Exception as e:
+            return {"message": f"Erro ao atualizar nível do aluno: {e}"}, 500
+    else:
+        return {"message": "Falha ao conectar com o banco de dados!"}, 500
