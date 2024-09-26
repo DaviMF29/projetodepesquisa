@@ -1,46 +1,66 @@
+import random
 import numpy as np
 from decimal import Decimal
+import mysql.connector
 
 class Questions:
     @staticmethod
-    def get_questions_by_level_service(connection, student_level, question_params):
-        with connection.cursor() as cursor:
-            # Consulta para obter questões e seus parâmetros
-            query = """
-                SELECT id_questions, skill_question, question, answer, slope, threshold, asymptote
-                FROM questions
-            """
-            cursor.execute(query)
-            results = cursor.fetchall()
+    def get_questions_by_level_service(connection, student_level, question_params, id_content):
+        try:
+            # Verifica se a conexão está ativa
+            if connection.is_connected():
+                with connection.cursor() as cursor:
+                    # Consulta para obter questões e seus parâmetros
+                    query = """
+                    SELECT id_questions, skill_question, question, answer, slope, threshold, asymptote
+                    FROM questions
+                    WHERE id_content = %s
+                    """
+                    cursor.execute(query, (id_content,))
+                    results = cursor.fetchall()
 
-        if not results:
-            return {"error": "Nenhuma questão encontrada."}, 200
+                    if not results:
+                        return {"error": "Nenhuma questão encontrada."}, 200
 
-        # Iterar sobre as questões e os parâmetros TRI
-        for row, params in zip(results, question_params):
-            question_id = row[0]
-            skill = row[1]
-            question_image = row[2]
-            answer = row[3]
-            slope = row[4]  # Discrimination
-            threshold = row[5]  # Difficulty
-            asymptote = row[6]  # Guessing
+                    # Iterar sobre as questões e os parâmetros TRI
+                    suitable_questions = []  # Lista para armazenar questões adequadas
 
-            # Calcular a probabilidade de acerto com base nos parâmetros TRI
-            prob_correct = calculate_question_prob(student_level, slope, threshold, asymptote)
+                    for row in results:
+                        question_id = row[0]
+                        skill = row[1]
+                        question_image = row[2]
+                        answer = row[3]
+                        slope = row[4]  # Discrimination
+                        threshold = row[5]  # Difficulty
+                        asymptote = row[6]  # Guessing
 
-            # Se a questão for adequada ao nível do aluno, retorna imediatamente
-            if is_question_suitable(prob_correct):
-                return {
-                    "ID": question_id,
-                    "Skill": skill,
-                    "Question Image": question_image,
-                    "Answer": answer,
-                    "Question Value": prob_correct
-                }, 200
+                        # Calcular a probabilidade de acerto com base nos parâmetros TRI
+                        prob_correct = calculate_question_prob(student_level, slope, threshold, asymptote)
 
-        # Se nenhuma questão for adequada, retorna uma mensagem de erro
-        return {"error": "Nenhuma questão adequada encontrada."}, 200
+                        if is_question_suitable(prob_correct, student_level):
+                            suitable_questions.append({
+                                "ID": question_id,
+                                "Skill": skill,
+                                "Question Image": question_image,
+                                "Answer": answer,
+                                "Question Value": prob_correct
+                            })
+
+                    if suitable_questions:
+                        # Retornar uma questão adequada aleatória
+                        return random.choice(suitable_questions), 200
+
+                    # Se nenhuma questão for adequada, retorna uma mensagem de erro
+                    return {"error": "Nenhuma questão adequada encontrada."}, 200
+
+            else:
+                return {"error": "Conexão com o banco de dados não está ativa."}, 500
+
+        except mysql.connector.Error as err:
+            return {"error": f"Erro ao acessar o banco de dados: {str(err)}"}, 500
+
+
+
 
     def get_params_by_question_id(connection, question_id):
         query = "SELECT slope, threshold, asymptote FROM questions WHERE id_questions = %s"
@@ -66,6 +86,7 @@ def calculate_question_prob(student_level, slope, threshold, asymptote):
     return asymptote + (1 - asymptote) / (1 + np.exp(-slope * (student_level - threshold)))
 
 
-def is_question_suitable(prob_correct):
-    return 0.3 <= prob_correct <= 0.7
+def is_question_suitable(prob_correct, threshold):
+    return prob_correct >= threshold
+
     

@@ -162,9 +162,9 @@ def update_password_field_student_controller(email, password):
 def update_levelStudent_controller(user_id, level):
     connection = db_connection()
     if connection:
-        verify_id_exists(connection, user_id["id"], 'student')
+        verify_id_exists(connection, user_id, 'student')
         try:
-            Student.update_levelStudent_service(connection, user_id["id"], level)
+            Student.update_levelStudent_service(connection, user_id, level)
             return {"message": "Nível do aluno atualizado com sucesso!"}, 200
         except Exception as e:
             return {"message": f"Erro ao atualizar nível do aluno: {e}"}, 500

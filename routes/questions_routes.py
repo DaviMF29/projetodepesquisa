@@ -1,5 +1,6 @@
 from flask import request, jsonify, Blueprint
 from flask_jwt_extended import get_jwt_identity, jwt_required
+from controllers.student_controller import update_levelStudent_controller
 from models.Questions import Questions
 from controllers.questions_controller import *
 
@@ -10,16 +11,20 @@ question_app = Blueprint("question_app", __name__)
 def get_questions_by_level_routes():
     
     user_id = get_jwt_identity()
+
+    id_content = request.json.get("id_content")
+
     if not user_id:
         return jsonify({"error": "Parâmetro 'level' é obrigatório."}), 400
-    student_level =get_student_initial_level(user_id)
-    response, status_code = get_questions_by_level_service_controller(student_level)
+    student_level =get_student_initial_level(user_id["id"])
+    response, status_code = get_questions_by_level_controller(student_level,id_content)
     return jsonify(response), status_code
 
 @question_app.route("/api/question/aswner", methods=['POST'])
 @jwt_required()
 def calculate_student_level_routes():
     user_id = get_jwt_identity()
+    user_id = user_id["id"]
     if not user_id:
         return jsonify({"error": "Parâmetro 'user_id' é obrigatório."}), 400
     
@@ -45,10 +50,11 @@ def calculate_student_level_routes():
 
     if is_correct:
         new_level = calculate_student_level([1], [[slope, threshold, asymptote]], user_id)
-        print(new_level)
+        update_levelStudent_controller(user_id, new_level)
         return jsonify({"message": "Resposta correta!", "new_level": new_level}), 200
     else:
         new_level = calculate_student_level([0], [[slope, threshold, asymptote]], user_id)
+        update_levelStudent_controller(user_id, new_level)
         return jsonify({"message": "Resposta incorreta.", "new_level": new_level}), 200
 
 def check_answer(question_id, student_answer):
