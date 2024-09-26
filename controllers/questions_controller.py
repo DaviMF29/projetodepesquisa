@@ -1,12 +1,11 @@
 from db.bd_mysql import db_connection
+from models import Student
 from models.Questions import Questions
+from models.Student import Student
 import numpy as np
 
-def get_questions_by_level_service_controller():
+def get_questions_by_level_service_controller(student_level):
     connection = db_connection()
-
-    # Usa o nível inicial do aluno
-    student_level = get_student_initial_level()
 
     # Obter os parâmetros de todas as questões
     question_params = Questions.get_question_params(connection)
@@ -17,8 +16,9 @@ def get_questions_by_level_service_controller():
     return response, 200
 
 # Função para definir o nível inicial do aluno (valor fixo)
-def get_student_initial_level():
-    return 0.0  # Nível inicial fixo para novos alunos
+def get_student_initial_level(user_id):
+    connection = db_connection()
+    return Student.get_student_lvl_service(connection,user_id)
 
 # Função para calcular o nível do aluno (pode ser usada futuramente)
 def calculate_student_level(student_responses, question_params):

@@ -2,6 +2,7 @@ from models.Users import User
 
 
 class Student(User):
+    #ADICIONAR O LEVEL
     def __init__(self, name, email, password, birth=None, gender=None, institution=None, period=None, state=None, city=None, registration=None, image=None):
         super().__init__(name, email, password, birth, gender, institution, state, city, registration,image)
         self.period = period
@@ -30,6 +31,18 @@ class Student(User):
             print(f"Erro ao criar serviço de estudante: {e}")
             return None
 
+    
+    def get_student_lvl_service(connection, user_id):
+        cursor = connection.cursor()
+        try:
+            cursor.execute("SELECT level FROM student WHERE id = %s", (user_id,))
+            level = cursor.fetchone()
+            if level:
+                return level
+            else:
+                return None
+        finally:
+            cursor.close()
     
     def update_student_service(connection, user_id, field, value):
         User.update_user_service(connection, 'aluno', user_id, field, value)
