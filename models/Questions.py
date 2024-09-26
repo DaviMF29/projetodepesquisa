@@ -1,4 +1,5 @@
 import numpy as np
+from decimal import Decimal
 
 class Questions:
     @staticmethod
@@ -38,7 +39,7 @@ class Questions:
                     "Skill": skill,
                     "Question Image": question_image,
                     "Answer": answer,
-                    "Probability Correct": prob_correct
+                    "Question Value": prob_correct
                 })
 
         if not suitable_questions:
@@ -52,9 +53,17 @@ class Questions:
         cursor = connection.cursor()
         cursor.execute(query)
         params = cursor.fetchall()
-        return [(param[0], param[1], param[2], param[3]) for param in params]  # Inclui o ID da questão
+        return [(param[0], param[1], param[2], param[3]) for param in params]
+
 def calculate_question_prob(student_level, slope, threshold, asymptote):
+    # Ensure all values are floats for compatibility in calculations
+    student_level = float(student_level) if isinstance(student_level, Decimal) else student_level
+    slope = float(slope) if isinstance(slope, Decimal) else slope
+    threshold = float(threshold) if isinstance(threshold, Decimal) else threshold
+    asymptote = float(asymptote) if isinstance(asymptote, Decimal) else asymptote
+    
     return asymptote + (1 - asymptote) / (1 + np.exp(-slope * (student_level - threshold)))
+
 
 def is_question_suitable(prob_correct):
     return 0.3 <= prob_correct <= 0.7
