@@ -1,11 +1,11 @@
-Flask
-mysql-connector-python
-python-dotenv
-flask_jwt_extended
-bcrypt
-flask_cors
-passlib
-firebase_admin
-werkzeug
-python-dateutil
-numpy
+Flask: 3.0.2
+mysql-connector-python: 9.0.0
+python-dotenv: 1.0.1
+flask_jwt_extended: 4.6.0
+bcrypt: 4.1.2
+flask_cors: 4.0.0
+passlib: 1.7.4
+firebase_admin: 6.5.0
+werkzeug: 3.0.2
+python-dateutil: 2.9.0.post0
+numpy: 1.26.4
