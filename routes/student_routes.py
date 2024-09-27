@@ -15,8 +15,8 @@ user_app = Blueprint('user_app', __name__)
 def add_user_router():
     data = request.get_json()
 
-    name = data.get('nameStudent')
-    email = data.get('emailStudent')
+    name = data.get('nameStudent').lower()
+    email = data.get('emailStudent').lower()
     birth = data.get('birthStudent')
     password = data.get('passwordStudent')
     confirm_password = data.get('confirm_password_Student')
@@ -48,14 +48,9 @@ def add_user_router():
     if domain not in allowed_domains:
         return jsonify({"message": "Only specific email domains are allowed"}), 401
 
-    hashed_password = hashpw(password.encode('utf-8'), gensalt()).decode('utf-8')
+    hashed_password = hashpw(password.encode('utf-8'), gensalt())
 
-    data = {
-        'nameStudent': name.lower(),
-        'emailStudent': email.lower(),
-        'birthStudent': birth,
-        'passwordStudent': hashed_password
-    }
+    data['passwordStudent'] = hashed_password.decode('utf-8')
 
     result = add_student_controller(data)
 
