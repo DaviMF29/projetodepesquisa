@@ -1,3 +1,4 @@
+from multiprocessing import connection
 import random
 import numpy as np
 from decimal import Decimal
@@ -60,7 +61,12 @@ class Questions:
             return {"error": f"Erro ao acessar o banco de dados: {str(err)}"}, 500
 
 
-
+    def get_level_questions_by_id_service(connection, id):
+        query = "SELECT level_questions FROM questions WHERE id_questions = %s"
+        cursor = connection.cursor()
+        cursor.execute(query, (id,))
+        result = cursor.fetchone()
+        return result
 
     def get_params_by_question_id(connection, question_id):
         query = "SELECT slope, threshold, asymptote FROM questions WHERE id_questions = %s"
