@@ -31,18 +31,25 @@ class Statistic:
         except mysql.connector.Error as err:
             return {"error": f"Erro ao acessar o banco de dados: {str(err)}"}, 500
         
-    def get_all_statistics_service_from_activity(connection):
+    def get_all_statistics_service_from_activity(connection, id_activity):
         try:
             if connection.is_connected():
-                query = "SELECT * FROM statistic WHERE id_activity = %s"
-                cursor = connection.cursor()
-                cursor.execute(query)
-                result = cursor.fetchall()
+                query = """
+                SELECT id_student, id_activity, id_question, answer_correct 
+                FROM statistic 
+                WHERE id_activity = %s
+                """
+                cursor = connection.cursor(dictionary=True) 
+                cursor.execute(query, (id_activity,)) 
+                
+                result = cursor.fetchall() 
                 return result
+
             else:
                 return {"error": "Conexão com o banco de dados não está ativa."}, 500
 
         except mysql.connector.Error as err:
             return {"error": f"Erro ao acessar o banco de dados: {str(err)}"}, 500
+
 
     
