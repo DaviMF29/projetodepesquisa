@@ -8,6 +8,7 @@ from db.firebase import delete_file_from_upload, handle_image_upload, upload_ima
 from models.Student import Student
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from models.Email import send_verification_code
 
 user_app = Blueprint('user_app', __name__)
 
@@ -51,6 +52,12 @@ def add_user_router():
     hashed_password = hashpw(password.encode('utf-8'), gensalt())
 
     data['passwordStudent'] = hashed_password.decode('utf-8')
+
+    try:
+        send_verification_code(email)
+    except Exception as e:
+        return jsonify({"message": "Failed to send verification email: " + str(e)}), 500
+
 
     result = add_student_controller(data)
 
