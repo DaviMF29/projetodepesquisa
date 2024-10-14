@@ -8,6 +8,7 @@ from db.firebase import delete_file_from_upload, handle_image_upload, upload_ima
 from models.Student import Student
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from models.Email import send_verification_code
 
 user_app = Blueprint('user_app', __name__)
 
@@ -54,7 +55,7 @@ def add_user_router():
 
     result = add_student_controller(data)
 
-    if len(result) ==2:
+    if len(result) == 2:
         response,status_code = result
         return jsonify(response), status_code
 

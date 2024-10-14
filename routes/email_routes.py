@@ -9,7 +9,7 @@ from middleware.global_middleware import verify_student_is_in_group
 from models.Student import Student
 from models.Teacher import Teacher
 from models.Group import Group
-from models.Email import sendEmail
+from models.Email import sendEmail, verify_code
 from passlib.hash import pbkdf2_sha256 as sha256
 from controllers.token_controller import create_token_controller
 
@@ -17,6 +17,30 @@ from models.Token import Token
 from models.Users import User
 
 email_app = Blueprint("email_app", __name__)
+
+@email_app.route('/api/send_verification_code', methods=['POST'])
+def verification_code():
+    try:
+        data = request.get_json()
+        code = data.get('code')
+        email = data.get('email')
+
+        connection = db_connection()
+        if not connection:
+            return jsonify({'error': 'Erro ao conectar com o banco de dados'}), 500
+        
+        if verify_code(email, code, connection):
+            return jsonify({'message': 'Código verificado com sucesso'}), 200
+        else:
+            return jsonify({'message': 'Código inválido'}), 400
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+    finally:
+        if connection:
+            connection.close()
+
 
 @email_app.route('/api/send_email', methods=['POST'])
 def sendEmail_route():

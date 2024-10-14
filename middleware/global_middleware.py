@@ -6,7 +6,6 @@ from models.Student import Student
 from models.Users import User
 from models.Group import Group
 
-
 @staticmethod
 def verify_email_registered(connection, email):
     user = Student.get_student_by_email_service(connection, email)
@@ -23,7 +22,7 @@ def verify_email_teacher_registered(connection, email):
     user = Teacher.get_teacher_by_email_service(connection, email)
     if user:
         return {"message": "Email já cadastrado!"}, 400
-
+    
 @staticmethod
 def verify_id_exists(connection, user_id, user_type):
     if user_type == 'student':
