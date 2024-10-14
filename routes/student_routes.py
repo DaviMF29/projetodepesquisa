@@ -8,12 +8,16 @@ from db.firebase import delete_file_from_upload, handle_image_upload, upload_ima
 from models.Student import Student
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from models.Email import send_verification_code
+from models.Email import send_verification_code, redis_client
+from middleware.global_middleware import verify_email_registered
+from db.bd_mysql import db_connection
+import json
 
 user_app = Blueprint('user_app', __name__)
 
 @user_app.route('/api/student', methods=['POST'])
 def add_user_router():
+    connection = db_connection()
     data = request.get_json()
 
     name = data.get('nameStudent').lower()
@@ -48,19 +52,21 @@ def add_user_router():
     allowed_domains = ["aluno.uepb.edu.br"]
     if domain not in allowed_domains:
         return jsonify({"message": "Only specific email domains are allowed"}), 401
-
+    
+    if verify_email_registered(connection, email):
+        return jsonify({"message": "Email já cadastrado!"}), 400
+    
     hashed_password = hashpw(password.encode('utf-8'), gensalt())
 
     data['passwordStudent'] = hashed_password.decode('utf-8')
+        
+    send_verification_code(email)
 
-    result = add_student_controller(data)
+    redis_client().setex(f"user_data:{email}", 600, json.dumps(data))
 
-    if len(result) == 2:
-        response,status_code = result
-        return jsonify(response), status_code
+    return jsonify({"message": "Código de verificação enviado para o email"}), 200
 
-    response, access_token, status_code = result
-    return jsonify(response), status_code, access_token
+
 
 @user_app.route("/api/student", methods=['PATCH'])
 @jwt_required()

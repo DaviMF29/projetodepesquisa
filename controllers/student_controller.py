@@ -3,10 +3,9 @@ from models.Student import Student
 from db.bd_mysql import db_connection
 from werkzeug.utils import secure_filename
 from middleware.global_middleware import (
-    verify_email_registered,
     verify_id_exists,
     verify_email_student_registered)
-from models.Email import send_verification_code
+
 
 def add_student_controller(data):
     try:
@@ -19,13 +18,6 @@ def add_student_controller(data):
         email = data.get('emailStudent').lower()
         birth = data.get('birthStudent')
         password = data.get('passwordStudent')
-
-
-        if verify_email_registered(connection, email):
-            return {"message": "Email já cadastrado!"}, 400
-        
-        
-        send_verification_code(email)
         
         if connection:
             student = Student(

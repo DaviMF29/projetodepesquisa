@@ -5,9 +5,10 @@ from dotenv import load_dotenv
 import random
 import redis
 
-redis_client = redis.StrictRedis.from_url(os.getenv("REDIS_CLIENT"), decode_responses=True)
-
 load_dotenv()
+
+def redis_client():
+    return redis.StrictRedis.from_url(os.getenv("REDIS_CLIENT"), decode_responses=True)
 
 def generateCode():
     return str(random.randint(100000, 900000))
@@ -45,19 +46,20 @@ def send_verification_code(email):
     subject = "Código de verificação"
     body = f"Seu código de verificação é: {code}"
 
-    redis_client.setex(email, 300, code)
+    redis_client().setex(f"verification_code:{email}", 300, code)
     
     sendEmail(subject, email, body)
 
 def verify_code(email, code):
     
-    stored_code = redis_client.get(email)
+    stored_code = redis_client().get(f"verification_code:{email}")
 
     if stored_code is None:
         print("Nenhum código encontrado no Redis para este email.")
         return False
-   
-    return stored_code == code
-        
     
+    return stored_code.strip() == code.strip()
+        
+def user_data(email):
+    return redis_client().get(f"user_data:{email}")
 

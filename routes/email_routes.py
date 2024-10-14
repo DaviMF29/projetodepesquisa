@@ -9,9 +9,11 @@ from middleware.global_middleware import verify_student_is_in_group
 from models.Student import Student
 from models.Teacher import Teacher
 from models.Group import Group
-from models.Email import sendEmail, verify_code
+from models.Email import sendEmail, verify_code, user_data
 from passlib.hash import pbkdf2_sha256 as sha256
 from controllers.token_controller import create_token_controller
+from controllers.student_controller import add_student_controller
+import json
 
 from models.Token import Token
 from models.Users import User
@@ -26,15 +28,30 @@ def verification_code(email):
 
         if not code:
             return jsonify({'error': 'Código não fornecido'}), 400
+        
 
-        if verify_code(email, code):
-            return jsonify({'message': 'Código verificado com sucesso'}), 200
-        else:
-            return jsonify({'message': 'Código inválido'}), 400
-    
+        if not verify_code(email, code):
+            return ({'message': 'Código inválido'}), 400
+        
+        dataUser = user_data(email)
+
+        if not dataUser:
+            return jsonify({"message": "Os dados do usuário expiraram ou são inválidos."}), 400
+        
+        #converter de volta para um dicionario
+        data = json.loads(dataUser)
+
+        result = add_student_controller(data)
+
+        if len(result) == 2:
+            response,status_code = result
+            return jsonify(response), status_code
+
+        response, access_token, status_code = result
+        return jsonify(response), status_code, access_token
+        
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
 
 
 @email_app.route('/api/send_email', methods=['POST'])
