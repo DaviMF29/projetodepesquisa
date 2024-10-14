@@ -18,28 +18,23 @@ from models.Users import User
 
 email_app = Blueprint("email_app", __name__)
 
-@email_app.route('/api/send_verification_code', methods=['POST'])
-def verification_code():
+@email_app.route('/api/send_verification_code/<email>', methods=['POST'])
+def verification_code(email):
     try:
         data = request.get_json()
         code = data.get('code')
-        email = data.get('email')
 
-        connection = db_connection()
-        if not connection:
-            return jsonify({'error': 'Erro ao conectar com o banco de dados'}), 500
-        
-        if verify_code(email, code, connection):
+        if not code:
+            return jsonify({'error': 'Código não fornecido'}), 400
+
+        if verify_code(email, code):
             return jsonify({'message': 'Código verificado com sucesso'}), 200
         else:
             return jsonify({'message': 'Código inválido'}), 400
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    
-    finally:
-        if connection:
-            connection.close()
+
 
 
 @email_app.route('/api/send_email', methods=['POST'])

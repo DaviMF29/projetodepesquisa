@@ -24,8 +24,9 @@ def add_student_controller(data):
         if verify_email_registered(connection, email):
             return {"message": "Email já cadastrado!"}, 400
         
-        send_verification_code(email, connection)
-
+        
+        send_verification_code(email)
+        
         if connection:
             student = Student(
                 name=name,
