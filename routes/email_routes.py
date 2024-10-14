@@ -13,6 +13,7 @@ from models.Email import sendEmail, verify_code, user_data
 from passlib.hash import pbkdf2_sha256 as sha256
 from controllers.token_controller import create_token_controller
 from controllers.student_controller import add_student_controller
+from controllers.teacher_controller import add_teacher_controller
 import json
 
 from models.Token import Token
@@ -40,8 +41,11 @@ def verification_code(email):
         
         #converter de volta para um dicionario
         data = json.loads(dataUser)
-
-        result = add_student_controller(data)
+        print(email.split("@")[-1])
+        if email.split("@")[-1] == "aluno.uepb.edu.br":
+            result = add_student_controller(data)
+        else: 
+            result = add_teacher_controller(data)
 
         if len(result) == 2:
             response,status_code = result

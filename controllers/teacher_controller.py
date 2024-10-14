@@ -16,11 +16,6 @@ def add_teacher_controller(data):
     birth = data.get('birthTeacher')
     password = data.get('passwordTeacher')
 
-
-    verifyEmail = verify_email_registered(connection,email)
-    if verifyEmail:
-        return {"message": "Email já cadastrado!"}, 400
-
     if connection:
         teacher = Teacher(
             name=name,
