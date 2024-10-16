@@ -2,8 +2,16 @@ import os
 import smtplib
 from email.message import EmailMessage
 from dotenv import load_dotenv
+import random
+import redis
 
 load_dotenv()
+
+def redis_client():
+    return redis.StrictRedis.from_url(os.getenv("REDIS_CLIENT"), decode_responses=True)
+
+def generateCode():
+    return str(random.randint(100000, 900000))
 
 def sendEmail(subject, recipient, body):
     email_user = os.getenv('EMAIL_USER')
@@ -31,3 +39,27 @@ def sendEmail(subject, recipient, body):
     except smtplib.SMTPException as e:
         print(f"Erro ao enviar e-mail: {e}")
         raise
+
+def send_verification_code(email):
+    code = generateCode()
+
+    subject = "Código de verificação"
+    body = f"Seu código de verificação é: {code}"
+
+    redis_client().setex(f"verification_code:{email}", 300, code)
+    
+    sendEmail(subject, email, body)
+
+def verify_code(email, code):
+    
+    stored_code = redis_client().get(f"verification_code:{email}")
+
+    if stored_code is None:
+        print("Nenhum código encontrado no Redis para este email.")
+        return False
+    
+    return stored_code.strip() == code.strip()
+        
+def user_data(email):
+    return redis_client().get(f"user_data:{email}")
+

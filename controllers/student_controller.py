@@ -2,10 +2,10 @@ from flask_jwt_extended import create_access_token
 from models.Student import Student
 from db.bd_mysql import db_connection
 from werkzeug.utils import secure_filename
-
 from middleware.global_middleware import (
-    verify_email_registered,
-    verify_id_exists,verify_email_student_registered,)
+    verify_id_exists,
+    verify_email_student_registered)
+
 
 def add_student_controller(data):
     try:
@@ -18,11 +18,7 @@ def add_student_controller(data):
         email = data.get('emailStudent').lower()
         birth = data.get('birthStudent')
         password = data.get('passwordStudent')
-
-
-        if verify_email_registered(connection, email):
-            return {"message": "Email já cadastrado!"}, 400
-
+        
         if connection:
             student = Student(
                 name=name,
