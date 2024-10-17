@@ -44,9 +44,12 @@ def send_verification_code(email):
     code = generateCode()
 
     subject = "Código de verificação"
-    body = f"Seu código de verificação é: {code}"
 
     redis_client().setex(f"verification_code:{email}", 300, code)
+
+    with open("templates/sendCodeVerification.html", 'r', encoding='utf-8') as file:
+        html = file.read()
+        body = html.format(codigo=code)
     
     sendEmail(subject, email, body)
 
