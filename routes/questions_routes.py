@@ -36,11 +36,9 @@ def calculate_student_level_routes():
     if not question_id or student_answer is None:
         return jsonify({"error": "Parâmetros 'ID' e 'student_answer' são obrigatórios."}), 400
 
-    is_correct = check_answer(question_id, student_answer)
+    is_correct = check_answer_controller(question_id, student_answer)
     
-    # Conectando ao banco de dados para obter os parâmetros da questão
-    connection = db_connection()
-    params = Questions.get_params_by_question_id(connection, question_id)
+    params = get_question_params_controller(question_id)
 
     if params is None:
         return jsonify({"error": "Parâmetros da questão não encontrados."}), 404
@@ -57,18 +55,3 @@ def calculate_student_level_routes():
         update_levelStudent_controller(user_id, new_level)
         return jsonify({"message": "Resposta incorreta.", "new_level": new_level}), 200
 
-def check_answer(question_id, student_answer):
-    connection = db_connection()
-    cursor = connection.cursor()
-    try:
-        cursor.execute("SELECT answer FROM questions WHERE id_questions = %s", (question_id,))
-        result = cursor.fetchone()
-
-        # Verificar se a questão existe
-        if result:
-            correct_answer = result[0]
-            return student_answer == correct_answer
-        else:
-            return False  # Questão não encontrada
-    finally:
-        cursor.close()

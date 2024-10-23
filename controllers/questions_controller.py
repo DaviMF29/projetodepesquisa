@@ -7,9 +7,7 @@ import numpy as np
 
 def get_questions_by_level_controller(student_level,id_content):
     connection = db_connection()
-
-    print(student_level)
-
+    
     question_params = Questions.get_question_params(connection)
     
     response = Questions.get_questions_by_level_service(connection, student_level, question_params,id_content)
@@ -36,3 +34,16 @@ def calculate_student_level(student_responses, question_params, user_id):
         theta += learning_rate * (response - prob_correct)
     theta = round(theta, 4)
     return theta
+
+
+def check_answer_controller(question_id, student_answer):
+    connection = db_connection()
+    result = Questions.get_correct_answer(connection, question_id)
+    if result:
+        correct_aswer = result[0]
+        return student_answer == correct_aswer
+    return False
+
+def get_question_params_controller(question_id):
+    connection = db_connection()
+    return Questions.get_params_by_question_id(connection, question_id)
