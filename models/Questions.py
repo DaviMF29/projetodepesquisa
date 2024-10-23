@@ -59,7 +59,15 @@ class Questions:
 
         except mysql.connector.Error as err:
             return {"error": f"Erro ao acessar o banco de dados: {str(err)}"}, 500
-
+        
+    @staticmethod
+    def get_correct_answer(connection, question_id):
+        cursor = connection.cursor()
+        try:
+            cursor.execute("SELECT answer FROM questions WHERE id_questions = %s", (question_id,))
+            return cursor.fetchone()
+        finally:
+            cursor.close()
 
     def get_level_questions_by_id_service(connection, id):
         query = "SELECT level_questions FROM questions WHERE id_questions = %s"
