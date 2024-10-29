@@ -1,27 +1,41 @@
 from models.Statistic import Statistic
+from db.bd_mysql import db_connection
 
-def create_statistc_controller(connection, data):
-    
+
+def calculate_percentage(correct_answers, total_questions):
+    if total_questions > 0:
+        return (correct_answers / total_questions) * 100
+    return 0
+
+
+def create_statistc_controller(data):
     id_student = data.get('id_student')
     id_activity = data.get('id_activity')
     id_question = data.get('id_question')
     answer_correct = data.get('answer_correct')
 
-    return Statistic.create_statistc_service(connection, id_student, id_activity,id_question, answer_correct)
+    connection = db_connection()
+    try:
+        return Statistic.create_statistc_service(connection, id_student, id_activity,id_question, answer_correct)
+    finally:
+        connection.close()
 
-def group_answer_by_id_student_controller(connection, id_student,id_activity):
-    questions = Statistic.group_answer_by_id_student_service(connection, id_student,id_activity)
+
+
+def group_answer_by_id_student_controller(id_student,id_activity):
+    connection = db_connection()
+    try:
+        questions = Statistic.group_answer_by_id_student_service(connection, id_student,id_activity)
+    finally:
+        connection.close()
     
     count_correct_answer = sum(1 for question in questions if question[1] == 1)
-    
     total_questions = len(questions)
 
     if total_questions == 0:
-        return {
-            "message": "Não há respostas para essa atividade"
-        }
+        return { "message": "Não há respostas para essa atividade" }
 
-    percentage = (count_correct_answer / total_questions) * 100
+    percentage = calculate_percentage(count_correct_answer, total_questions)
 
     return {
         "total_questions": total_questions,
@@ -29,8 +43,13 @@ def group_answer_by_id_student_controller(connection, id_student,id_activity):
         "percentage": percentage
     }
 
-def get_all_statistics_by_activity(connection, id_activity):
-    questions = Statistic.get_all_statistics_service_from_activity(connection, id_activity)
+
+def get_all_statistics_by_activity(id_activity):
+    connection = db_connection()
+    try:
+        questions = Statistic.get_all_statistics_service_from_activity(connection, id_activity)
+    finally:
+        connection.close()
     
     grouped_statistics = {}
 
@@ -62,7 +81,7 @@ def get_all_statistics_by_activity(connection, id_activity):
         correct_answers = stats['correct_answers']
         
         if total_questions > 0:
-            percentage = (correct_answers / total_questions) * 100
+            percentage = calculate_percentage(correct_answers, total_questions)
         else:
             percentage = 0
         

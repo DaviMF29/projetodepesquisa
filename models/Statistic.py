@@ -6,7 +6,7 @@ class Statistic:
     def create_statistc_service(connection, id_student, id_activity,id_question, answer_correct):
         try:
             if connection.is_connected():
-                query = "INSERT INTO statistic (id_student, id_activity,id_question, answer_correct) VALUES (%s,%s, %s, %s)"
+                query = "INSERT INTO statistic (id_student, id_activity, id_question, answer_correct) VALUES (%s,%s, %s, %s)"
                 cursor = connection.cursor()
                 cursor.execute(query, (id_student, id_activity ,id_question, answer_correct))
                 connection.commit()
@@ -16,6 +16,9 @@ class Statistic:
 
         except mysql.connector.Error as err:
             return {"error": f"Erro ao acessar o banco de dados: {str(err)}"}, 500
+        
+        finally:
+            cursor.close()
 
     def group_answer_by_id_student_service(connection, id_student, id_activity):
         try:
@@ -30,6 +33,10 @@ class Statistic:
 
         except mysql.connector.Error as err:
             return {"error": f"Erro ao acessar o banco de dados: {str(err)}"}, 500
+        
+        finally:
+            cursor.close()
+
         
     def get_all_statistics_service_from_activity(connection, id_activity):
         try:
@@ -50,6 +57,10 @@ class Statistic:
 
         except mysql.connector.Error as err:
             return {"error": f"Erro ao acessar o banco de dados: {str(err)}"}, 500
+        
+
+        finally:
+            cursor.close()
 
 
     
