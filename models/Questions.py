@@ -6,18 +6,19 @@ import mysql.connector
 
 class Questions:
     @staticmethod
-    def get_questions_by_level_service(connection, student_level, question_params, id_content):
+    def get_questions_by_level_service(connection, student_level, question_params, id_activity):
         try:
             # Verifica se a conexão está ativa
             if connection.is_connected():
                 with connection.cursor() as cursor:
                     # Consulta para obter questões e seus parâmetros
                     query = """
-                    SELECT id_questions, skill_question, question, answer, slope, threshold, asymptote
-                    FROM questions
-                    WHERE id_content = %s
+                    SELECT q.id_questions, q.skill_question, q.question, q.answer, q.slope, q.threshold, q.asymptote
+                    FROM questions q
+                    JOIN activity a ON q.id_content = a.id_content
+                    WHERE a.id_activity = %s
                     """
-                    cursor.execute(query, (id_content,))
+                    cursor.execute(query, (id_activity,))
                     results = cursor.fetchall()
 
                     if not results:
