@@ -96,7 +96,7 @@ def forgetPassword():
             return {"error": error_message}, status_code
 
 
-        link = f'screen-programming2024.vercel.app/html/nova-senha.html?token={token}'
+        link = f'screenning-programming2024.vercel.app/html/nova-senha.html?token={token}'
         subject = 'Recuperação de senha'
         
         with open('templates/forget_password.html', 'r', encoding='utf-8') as file:
