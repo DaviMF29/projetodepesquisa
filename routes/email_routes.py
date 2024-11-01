@@ -128,7 +128,7 @@ def group_invite():
         if status_code != 201:
             return jsonify({'error': token_id}), status_code
         
-        link = f"http://screen-programming2024.vercel.app/html/pagina-redirecionamento.html?token={token}"
+        link = f"http://screenning-programming2024.vercel.app/html/pagina-redirecionamento.html?token={token}"
         subject = 'Convite para grupo'
 
         if not isinstance(recipient, str):
