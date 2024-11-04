@@ -8,9 +8,10 @@ from db.firebase import delete_file_from_upload, handle_image_upload, upload_ima
 from models.Student import Student
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from models.Email import send_verification_code, redis_client
+from models.Email import send_verification_code
 from middleware.global_middleware import verify_email_registered
 from db.bd_mysql import db_connection
+from db.redis import redis_client
 import json
 
 user_app = Blueprint('user_app', __name__)

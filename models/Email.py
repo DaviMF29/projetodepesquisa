@@ -3,12 +3,9 @@ import smtplib
 from email.message import EmailMessage
 from dotenv import load_dotenv
 import random
-import redis
+from db.redis import redis_client
 
 load_dotenv()
-
-def redis_client():
-    return redis.StrictRedis.from_url(os.getenv("REDIS_CLIENT"), decode_responses=True)
 
 def generateCode():
     return str(random.randint(100000, 900000))

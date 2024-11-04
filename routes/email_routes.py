@@ -16,6 +16,7 @@ from controllers.student_controller import add_student_controller
 from controllers.teacher_controller import add_teacher_controller
 import json
 
+from db.redis import redis_client
 from models.Token import Token
 from models.Users import User
 
@@ -79,10 +80,6 @@ def forgetPassword():
         recipient = data.get('email')
         if not recipient or not isinstance(recipient, str):
             return jsonify({'error': 'Email inválido'}), 400
-
-        connection = db_connection()
-        if not connection:
-            return jsonify({'error': 'Erro ao conectar com o banco de dados'}), 500
         
         if "servidor" in recipient:
             user_type = "teacher"
@@ -156,21 +153,17 @@ def group_invite():
 def verify_invite():
     try:
         connection = db_connection()
-        if not connection:
-            return jsonify({'error': 'Erro ao conectar com o banco de dados'}), 500
-        
+        redis = redis_client()
         user = get_jwt_identity()
-        userEmail = User.get_email_by_id(user["id"])
-        token = Token.get_token_by_user_email_service
+        userEmail = User.get_email_by_id(connection, user["id"], user["type"])
+        userEmail = str(userEmail[0])
+
+        token = Token.get_token_by_user_email_service(redis, userEmail)
         if token["email"]!= userEmail:
             return jsonify({"Emails incompativeis"})
-        return jsonify({token})
+        return jsonify(token)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    finally:
-        if connection:
-            connection.close()
-
 
 
 # # # ATALHO PARA COMENTAR == CTRL + K -> CTRL + C
