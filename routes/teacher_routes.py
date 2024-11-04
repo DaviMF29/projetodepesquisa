@@ -5,9 +5,10 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 from controllers.teacher_controller import *
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from models.Email import send_verification_code, redis_client
+from models.Email import send_verification_code
 from middleware.global_middleware import verify_email_registered
 from db.bd_mysql import db_connection
+from db.redis import redis_client
 import json
 
 from models.Teacher import Teacher
