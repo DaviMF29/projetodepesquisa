@@ -40,7 +40,6 @@ def verification_code(email):
             return jsonify({"message": "Os dados do usuário expiraram ou são inválidos."}), 400
         
         
-        print(email.split("@")[-1])
         if email.split("@")[-1] == "aluno.uepb.edu.br":
             result = add_student_controller(dataUser)
         else: 

@@ -26,13 +26,6 @@ def add_user_router():
     birth = data.get('birthTeacher')
     password = data.get('passwordTeacher')
     confirm_password = data.get('confirm_password_Teacher')
-
-    data = {
-        "nameTeacher": name,
-        "emailTeacher": email,
-        "birthTeacher": birth,
-        "passwordTeacher": password
-    }
     
 
     if not all([name, email, birth, password, confirm_password]):
@@ -70,6 +63,7 @@ def add_user_router():
         return jsonify({"message": "Email já cadastrado!"}), 400
     
 
+    data.pop('confirm_password_Teacher')
     send_verification_code(email)
 
     redis.hset(f"user_data:{email}", mapping=data)
