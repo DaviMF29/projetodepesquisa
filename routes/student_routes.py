@@ -19,6 +19,7 @@ user_app = Blueprint('user_app', __name__)
 @user_app.route('/api/student', methods=['POST'])
 def add_user_router():
     connection = db_connection()
+    redis = redis_client()
     data = request.get_json()
 
     name = data.get('nameStudent').lower()
@@ -26,6 +27,13 @@ def add_user_router():
     birth = data.get('birthStudent')
     password = data.get('passwordStudent')
     confirm_password = data.get('confirm_password_Student')
+
+    data = {
+        "nameStudent": name,
+        "emailStudent": email,
+        "birthStudent": birth,
+        "passwordStudent": password
+    }
 
     if not all([name, email, birth, password, confirm_password]):
         return jsonify({"message": "All fields are required"}), 400
@@ -63,7 +71,8 @@ def add_user_router():
         
     send_verification_code(email)
 
-    redis_client().setex(f"user_data:{email}", 600, json.dumps(data))
+    redis.hset(f"user_data:{email}", mapping=data)
+    redis.expire(f"user_data:{email}", 600)
 
     return jsonify({"message": "Código de verificação enviado para o email"}), 200
 

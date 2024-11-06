@@ -31,7 +31,6 @@ def verification_code(email):
         if not code:
             return jsonify({'error': 'Código não fornecido'}), 400
         
-
         if not verify_code(email, code):
             return ({'message': 'Código inválido'}), 400
         
@@ -40,13 +39,12 @@ def verification_code(email):
         if not dataUser:
             return jsonify({"message": "Os dados do usuário expiraram ou são inválidos."}), 400
         
-        #converter de volta para um dicionario
-        data = json.loads(dataUser)
+        
         print(email.split("@")[-1])
         if email.split("@")[-1] == "aluno.uepb.edu.br":
-            result = add_student_controller(data)
+            result = add_student_controller(dataUser)
         else: 
-            result = add_teacher_controller(data)
+            result = add_teacher_controller(dataUser)
 
         if len(result) == 2:
             response,status_code = result
