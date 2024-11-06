@@ -28,12 +28,6 @@ def add_user_router():
     password = data.get('passwordStudent')
     confirm_password = data.get('confirm_password_Student')
 
-    data = {
-        "nameStudent": name,
-        "emailStudent": email,
-        "birthStudent": birth,
-        "passwordStudent": password
-    }
 
     if not all([name, email, birth, password, confirm_password]):
         return jsonify({"message": "All fields are required"}), 400
@@ -68,6 +62,7 @@ def add_user_router():
     hashed_password = hashpw(password.encode('utf-8'), gensalt())
 
     data['passwordStudent'] = hashed_password.decode('utf-8')
+    data.pop('confirm_password_Student')
         
     send_verification_code(email)
 
