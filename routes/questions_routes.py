@@ -3,15 +3,15 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 from controllers.student_controller import update_levelStudent_controller
 from models.Questions import Questions
 from controllers.questions_controller import *
+from controllers.statisc_controller import create_statistc_controller
 
 question_app = Blueprint("question_app", __name__)
 
 @question_app.route("/api/question/level", methods=['GET'])
 @jwt_required()
 def get_questions_by_level_routes():
-    
-    user_id = get_jwt_identity()
 
+    user_id = get_jwt_identity()
     id_activity = request.json.get("id_activity")
 
     if not user_id:
@@ -20,28 +20,38 @@ def get_questions_by_level_routes():
     response, status_code = get_questions_by_level_controller(student_level, id_activity)
     return jsonify(response), status_code
 
+
+
 @question_app.route("/api/question/aswner", methods=['POST'])
 @jwt_required()
 def calculate_student_level_routes():
+
     user_id = get_jwt_identity()
     user_id = user_id["id"]
-    if not user_id:
-        return jsonify({"error": "Parâmetro 'user_id' é obrigatório."}), 400
-    
+    id_activity = request.args.get("id_activity")
     # Obtendo a resposta e o ID da questão do corpo da requisição
     data = request.json
     question_id = data.get("ID")
     student_answer = data.get("student_answer")
+
+    if not user_id:
+        return jsonify({"error": "Parâmetro 'user_id' é obrigatório."}), 400
+    
+    if not id_activity:
+        return jsonify({"error": "Parâmetro 'id_activity' é obrigatório."}), 400
     
     if not question_id or student_answer is None:
         return jsonify({"error": "Parâmetros 'ID' e 'student_answer' são obrigatórios."}), 400
 
-    is_correct = check_answer_controller(question_id, student_answer)
+
+    is_correct, value = check_answer_controller(question_id, student_answer)
     
     params = get_question_params_controller(question_id)
 
     if params is None:
         return jsonify({"error": "Parâmetros da questão não encontrados."}), 404
+    
+    create_statistc_controller(user_id, id_activity, question_id, value)
 
     # Desempacotando os parâmetros
     slope, threshold, asymptote = params
@@ -54,4 +64,4 @@ def calculate_student_level_routes():
         new_level = calculate_student_level([0], [[slope, threshold, asymptote]], user_id)
         update_levelStudent_controller(user_id, new_level)
         return jsonify({"message": "Resposta incorreta.", "new_level": new_level}), 200
-
+    

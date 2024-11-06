@@ -18,6 +18,7 @@ teacher_app = Blueprint('teacher_app', __name__)
 @teacher_app.route('/api/teacher', methods=['POST'])
 def add_user_router():
     connection = db_connection()
+    redis = redis_client()
     data = request.get_json()
 
     name = data.get('nameTeacher').lower()
@@ -25,6 +26,13 @@ def add_user_router():
     birth = data.get('birthTeacher')
     password = data.get('passwordTeacher')
     confirm_password = data.get('confirm_password_Teacher')
+
+    data = {
+        "nameTeacher": name,
+        "emailTeacher": email,
+        "birthTeacher": birth,
+        "passwordTeacher": password
+    }
     
 
     if not all([name, email, birth, password, confirm_password]):
@@ -57,7 +65,6 @@ def add_user_router():
     hashed_password = hashpw(password.encode('utf-8'), gensalt())
 
     data['passwordTeacher'] = hashed_password.decode('utf-8')  
-
     verifyEmail = verify_email_registered(connection, email)
     if verifyEmail:
         return jsonify({"message": "Email já cadastrado!"}), 400
@@ -65,7 +72,8 @@ def add_user_router():
 
     send_verification_code(email)
 
-    redis_client().setex(f"user_data:{email}", 600, json.dumps(data))
+    redis.hset(f"user_data:{email}", mapping=data)
+    redis.expire(f"user_data:{email}", 600)
 
     return jsonify({"message": "Código de verificação enviado para o email"}), 200
 
