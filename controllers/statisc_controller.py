@@ -62,8 +62,8 @@ def group_answer_by_id_student_controller(id_student,id_activity):
     skill_percentage = {skill: round(percentage, 2) for skill, percentage in skill_percentage.items()}
 
     return {
-        "total_questions": total_questions,
         "name_student": questions[0][3],
+        "total_questions": total_questions,
         "correct_answers": correct_answers,
         "percentage_overall": percentage_overall,
         "skill_stats": skill_stats,
