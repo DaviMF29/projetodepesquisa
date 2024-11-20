@@ -186,6 +186,7 @@ def update_password():
     if len(password) > 20:
         return jsonify({"message": "Password must not exceed 20 characters"}), 400
     
+    
     password_old = get_student_by_email_controller(email)
     if checkpw(password.encode('utf-8'), password_old['password'].encode('utf-8')):
         return jsonify({"message": "A senha não pode ser igual a anterior!"}), 400
