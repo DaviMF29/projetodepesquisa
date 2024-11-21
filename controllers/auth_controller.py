@@ -32,9 +32,7 @@ def login_controller(data):
 
         
         if user and bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
-            access_token = create_access_token(
-                identity=str(user['id']), 
-                additional_claims={'user_type': user_type})
+            access_token = create_access_token(identity={'id': str(user['id']), 'type': user_type})
             return {"access_token": access_token}, 200
 
         return {"message": "Invalid email or password"}, 401

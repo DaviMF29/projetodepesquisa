@@ -13,8 +13,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     try {
         // Decodifica o token JWT
         const decode = jwt_decode(token);
-        const userId = decode.sub;
-        const userType = decode.userType;
+        const groupId = decode.groupId;
 
         // Verificar convite
         const inviteResponse = await fetch('https://projetodepesquisa.vercel.app/api/verifyInvite', {
@@ -32,7 +31,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
 
         // Atualizar o grupo do aluno
-        const response = await fetch(`https://projetodepesquisa.vercel.app/api/group/student/${userId}`, {
+        const response = await fetch(`https://projetodepesquisa.vercel.app/api/group/student/${groupId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
