@@ -61,6 +61,8 @@ def delete_group_route(groupId):
 def get_groups_from_teacher_route():
     claims = get_jwt()
     teacherId = claims.get("user_id")
+    if not teacherId:
+        return {"message": "Invalid token data"}, 400
     response, status_code = get_group_by_teacher_id_controller(teacherId)
     return jsonify(response), status_code
 
