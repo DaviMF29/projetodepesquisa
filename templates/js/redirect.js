@@ -13,7 +13,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     try {
         // Decodifica o token JWT
         const decode = jwt_decode(token);
-        const groupId = decode.sub.groupId;
+        const userId = decode.sub;
+        const userType = decode.userType;
 
         // Verificar convite
         const inviteResponse = await fetch('https://projetodepesquisa.vercel.app/api/verifyInvite', {
