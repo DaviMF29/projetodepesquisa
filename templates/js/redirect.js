@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
 
         // Atualizar o grupo do aluno
-        const response = await fetch(`https://projetodepesquisa.vercel.app/api/group/student/${groupId}`, {
+        const response = await fetch(`https://projetodepesquisa.vercel.app/api/group/student/${userId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
