@@ -59,8 +59,9 @@ def delete_group_route(groupId):
 @group_app.route("/api/group/teacher", methods=["GET"])
 @jwt_required()
 def get_groups_from_teacher_route():
-    teacherId = get_jwt_identity()
-    response, status_code = get_group_by_teacher_id_controller(teacherId["id"])
+    claims = get_jwt()
+    teacherId = claims.get("user_id")
+    response, status_code = get_group_by_teacher_id_controller(teacherId)
     return jsonify(response), status_code
 
 @group_app.route("/api/group/<grupoId>", methods=["PATCH"])
